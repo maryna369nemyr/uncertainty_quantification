@@ -18,6 +18,30 @@ def discretize_oscillator_odeint(model, init_cond, t, args, atol, rtol):
     sol = odeint(model, init_cond, t, args=(args,), atol=atol, rtol=rtol)
     return sol[:, 0] # only y_0
 
+def plot_rel_errors(N, rel_error1, rel_error2, label_name1, label_name2, loglog_bool =True):
+    plt.figure("Relative errors")
+    if(loglog_bool):
+        plt.loglog(N, rel_error1, 'rx', label=label_name1)
+        plt.loglog(N, rel_error2, 'gx', label=label_name2)
+        plt.xlabel('Number of samples (loglog)')
+    else:
+        plt.plot(N, rel_error1, 'rx', label=label_name1)
+        plt.plot(N, rel_error2, 'gx', label=label_name2)
+        plt.xlabel('The degree of polynomial N')
+    plt.legend(loc='best', fontsize=8)
+    plt.ylabel('Error values')
+
+def plot_rel_error(N, rel_error, label_name, xlabel_name, line_type, loglog_bool =True):
+    plt.figure()
+    if(loglog_bool):
+        plt.loglog(N, rel_error, line_type, label=label_name)
+        plt.xlabel('Number of samples (loglog)')
+    else:
+        plt.plot(N, rel_error, line_type, label=label_name)
+        plt.xlabel(xlabel_name)
+    plt.legend(loc='best', fontsize=8)
+    plt.ylabel('Error values')
+
 
 if __name__ == '__main__':
     c,k ,f, w, y0, y1 = 0.5, 2.0, 0.5, 1.0, 0.5, 0.
@@ -61,10 +85,10 @@ if __name__ == '__main__':
         print(f'The best polynomial of degree {n} that approximates f(x): {cp.around(gPC_m, 1)}')
         print(f'Expansion coeff [0] = {expansion_coeff[0]}')#, expect_weights: {expect_y}')
 
-        mu = cp.E(gPC_m, distr_unif_w)
-        V = cp.Var(gPC_m, distr_unif_w)
+        mu [i] = cp.E(gPC_m, distr_unif_w)
+        V [i]= cp.Var(gPC_m, distr_unif_w)
 
-        print("mu = %.3f,V = %.3f" %(mu, V))
+        print("mu = %.8f,V = %.8f" %(mu[i], V[i]))
 
 
     mu_ref = [-0.43893703]
@@ -73,7 +97,8 @@ if __name__ == '__main__':
     #cols -sampling M
     rel_err_mu = np.abs(1 - mu / mu_ref)
     rel_err_V = np.abs(1 - V / V_ref)
-    #cols - grid points
-    #rows - sampling
-    #rel_err_mu_interpol = np.abs(1 - mu_interpol / mu_ref).T
-    #rel_err_V_interpol = np.abs(1 - V_interpol/ V_ref).T
+    print(rel_err_V, rel_err_mu)
+
+    plot_rel_error(N,rel_err_mu, "mean", "The degree of the polynomials N", 'rx',  loglog_bool = False)
+    plot_rel_error(N,rel_err_V, "var", "The degree of the polynomials N", 'gx',  loglog_bool = False)
+    plt.show()
