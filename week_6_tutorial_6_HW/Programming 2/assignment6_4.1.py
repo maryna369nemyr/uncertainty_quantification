@@ -67,8 +67,8 @@ if __name__ == '__main__':
     x_axis = np.linspace(0.0, t_max, num = grid_len,  endpoint=True)
     sol_odeint_true = discretize_oscillator_odeint(model, init_cond, x_axis, params_odeint, atol, rtol)
 
-    K = [2,4,6] # for approximation
-    N = [1,2,3] # for expansion coefficients
+    K = [2,4,6]#, 8, 10] # for approximation
+    N = [1,2,3]#, 4, 5] # for expansion coefficients
 
     mu, V = np.zeros(len(N)), np.zeros(len(N))
     mu_expansion, V_expansion= np.zeros(len(N)), np.zeros(len(N))
@@ -80,12 +80,11 @@ if __name__ == '__main__':
         # appr with gaussian polynomials
         nodes, weights = cp.generate_quadrature(K[i], distr_unif_w, rule = "G") #nodes [[1,2]]
         orth_poly = cp.orth_ttr(N[i], distr_unif_w, normed = True)
-        orth_polies.append(orth_poly)
+        #orth_polies.append(orth_poly)
         #evaluate f(x) at all quadrature nodes and take the y(10), i.e [-1]
         y_out = [discretize_oscillator_odeint(model, init_cond, x_axis, (c, k, f, node), atol, rtol)[-1] for node in nodes[0]]
 
-
-        #print(cp.around(orth_poly[1], 1))
+        #print(nodes, weights)
         #print(orth_poly[1](10))
         #SUPER STRANGE BUG
         #for j in range(len(orth_poly)):
@@ -100,7 +99,7 @@ if __name__ == '__main__':
         # gPC_m is the polynomial that approximates the most
         print(expansion_coeff)
         print(f'The best polynomial of degree {n} that approximates f(x): {cp.around(gPC_m, 1)}')
-        print(f'Expansion coeff [0] = {expansion_coeff[0]}')#, expect_weights: {expect_y}')
+        #print(f'Expansion coeff [0] = {expansion_coeff[0]}')#, expect_weights: {expect_y}')
 
         mu[i] = cp.E(gPC_m, distr_unif_w)
         V[i]= cp.Var(gPC_m, distr_unif_w)
@@ -117,11 +116,11 @@ if __name__ == '__main__':
         nodes, weights = cp.generate_quadrature(K[i], distr_unif_w, rule="G")  # nodes [[1,2]]
         # appr with gaussian polynomials
         orth_poly = cp.orth_ttr(N[i], distr_unif_w, normed=True)
-        # evaluate f(x) at all quadrature nodes and take the y(10), i.e [-1]
 
-        #orth_poly = orth_polies[i]
+        # evaluate f(x) at all quadrature nodes and take the y(10), i.e [-1]
         y_out = [discretize_oscillator_odeint(model, init_cond, x_axis, (c, k, f, node), atol, rtol)[-1] for node in
                  nodes[0]]
+        #print(nodes, weights)
 
         expansion_coeff_manual = np.zeros(len(orth_poly))
         # manual expansion coefficients
