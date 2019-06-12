@@ -182,26 +182,4 @@ if __name__ == '__main__':
                                                       rel_err_V_interpol[0][i],
                                                       rel_err_V_interpol[1][i],
                                                       rel_err_V_interpol[2][i]))
-    if(False):
-        plt.figure("Mean")
-        plt.loglog(M, rel_err_mu, 'r-', label='MC mean')
-        plt.loglog(M, rel_err_mu_interpol[0], 'gx', label='grid 6')
-        plt.loglog(M, rel_err_mu_interpol[1], 'bx', label='grid 11')
-        plt.loglog(M, rel_err_mu_interpol[2], 'yx', label='grid 21')
-        plt.legend(loc='best', fontsize=8)
-        plt.ylabel('Error values')
-        plt.xlabel('Number of samples (loglog)')
-
-
-
-        plt.figure("Variance")
-        plt.loglog(M, rel_err_V, 'r-', label='MC variance')
-        plt.loglog(M, rel_err_V_interpol[0], 'gx', label='grid 6')
-        plt.loglog(M, rel_err_V_interpol[1], 'bx', label='grid 11')
-        plt.loglog(M, rel_err_V_interpol[2], 'yx', label='grid 21')
-        plt.legend(loc='best', fontsize=8)
-        plt.ylabel('Error values')
-        plt.xlabel('Number of samples (loglog)')
-        plt.show()
-
 
