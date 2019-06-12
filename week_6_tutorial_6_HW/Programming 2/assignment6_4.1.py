@@ -94,7 +94,7 @@ if __name__ == '__main__':
         # gPC_m is the polynomial that approximates the most
         print(f'Expansion coeff chaospy: {expansion_coeff}')
         print(f'The best polynomial of degree {n} that approximates f(x): {cp.around(gPC_m, 1)}')
-        #print(f'Expansion coeff [0] = {expansion_coeff[0]}')#, expect_weights: {expect_y}')
+        print(f'Expansion coeff [0] = {expansion_coeff[0]}')#, expect_weights: {expect_y}')
 
         mu[i] = cp.E(gPC_m, distr_unif_w)
         V[i]= cp.Var(gPC_m, distr_unif_w)

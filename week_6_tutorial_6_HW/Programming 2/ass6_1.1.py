@@ -18,13 +18,6 @@ def discretize_oscillator_odeint(model, init_cond, t, args, atol, rtol):
     sol = odeint(model, init_cond, t, args=(args,), atol=atol, rtol=rtol)
     return sol[:, 0] # only y_0
 
-def barycentric_interp3(eval_point, grid, func_eval):
-    weights = compute_barycentric_weights(grid)
-    L_G = np.product(eval_point - grid)
-    result =  0
-    for i, x in enumerate(grid):
-        result += func_eval[i] * weights[i]/ (eval_point - x )
-    return result*L_G
 
 def compute_barycentric_weights(grid):
     size    = len(grid)
@@ -81,16 +74,17 @@ def interpolation_over_nodes(sol_odeint_true, grid_N, t_max, x_axis, model, init
         #list_interpolations.append(output_interpolation)
         interpolated_value[str(grid_size)] = output_interpolation[-1]
 
-        #print("Grid:\n", cheb_grid)
-        #plt.figure(str(grid_size)+ "_" + str(random.random()))
-        #plt.plot(x_axis, sol_odeint_true, 'b-', label='y0')
-        #plt.plot(x_axis, output_interpolation, 'r--', label='Bary')
-        #plt.legend(loc='best', fontsize=8)
-        #plt.ylabel('function')
-        #plt.xlabel('t')
+        if(True):
+            print("Grid:\n", cheb_grid)
+            plt.figure(str(grid_size)+ "_" + str(random.random()))
+            plt.plot(x_axis, sol_odeint_true, 'b-', label='y0')
+            plt.plot(x_axis, output_interpolation, 'r--', label='Bary')
+            plt.legend(loc='best', fontsize=8)
+            plt.ylabel('function')
+            plt.xlabel('t')
     return interpolated_value
 
-def interpolation_at_point(sol_odeint_true, grid_N, t_max, model, init_cond, params_odeint, atol, rtol):
+def interpolation_at_point(grid_N, t_max, model, init_cond, params_odeint, atol, rtol):
    # return an array with columns - grid_size
     output_interpolation = np.zeros(len(grid_N))
     x_eval = 10.0
@@ -118,10 +112,6 @@ if __name__ == '__main__':
     # relative and absolute tolerances for the ode int solver
     atol , rtol= 1e-10, 1e-10
 
-
-    #interpolation
-    func = lambda x: np.sin(10 * x)
-
     # define uniform interpolation's grid size
     N = [5, 10, 20]
     grid_N = [6, 11, 21] # points should on one more than N - degree of the polynomial
@@ -137,6 +127,9 @@ if __name__ == '__main__':
     #rows - number of sampled points
 
 
+    #Determenistic interpolation for omega = 1.0
+    interpolation_over_nodes(sol_odeint_true, grid_N, t_max, x_axis, model, init_cond, params_odeint, atol, rtol)
+
     for i, n in enumerate(M):
         distr = cp.Uniform(0.95, 1.05)
         w_generated = distr.sample(size=n)
@@ -144,15 +137,24 @@ if __name__ == '__main__':
 
         print("Calculating ... ", n)
 
-        output_interpol =  []
+        now_mc = time.time()
         for w_value in w_generated:
-            # direct MC sampling
+
             params_odeint_new = c, k, f, w_value
+            # direct MC sampling
             sol_odeint = discretize_oscillator_odeint(model, init_cond, x_axis, params_odeint_new, atol, rtol)
             outputs_MC_y.append(sol_odeint[-1])
+        print(f'Time for {n} generated values using MC sampling {time.time() - now_mc}')
 
+        now_interpol = time.time()
+
+        output_interpol = []
+        for w_value in w_generated:
+            params_odeint_new = c, k, f, w_value
             # using_interpolation
-            output_interpol.append(interpolation_at_point(sol_odeint,grid_N, t_max, model, init_cond, params_odeint_new, atol, rtol))
+            output_interpol.append(interpolation_at_point(grid_N, t_max, model, init_cond, params_odeint_new, atol, rtol))
+        print(f'Time for {n} generated values using interpolation {time.time() - now_interpol}')
+
 
         output_interpol = np.array(output_interpol)
 
@@ -201,6 +203,6 @@ if __name__ == '__main__':
     plt.legend(loc='best', fontsize=8)
     plt.ylabel('Error values')
     plt.xlabel('Number of samples (loglog)')
-    plt.show()
+    #plt.show()
 
 

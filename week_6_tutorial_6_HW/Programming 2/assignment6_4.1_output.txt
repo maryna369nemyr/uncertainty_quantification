@@ -1,0 +1,23 @@
+Expansion coeff chaospy: [-0.4389686  -0.00677291]
+The best polynomial of degree 1 that approximates f(x): -0.2q0-0.2
+Expansion coeff [0] = -0.43896859914188463
+mu = -0.43896860,V = 0.00004587
+Expansion coeff chaospy: [-0.4389685  -0.00677347  0.01226523]
+The best polynomial of degree 2 that approximates f(x): 16.5q0^2-33.1q0+16.2
+Expansion coeff [0] = -0.4389685045569721
+mu = -0.43896850,V = 0.00019632
+Expansion coeff chaospy: [-4.38968505e-01 -6.77346564e-03  1.22652275e-02  1.87316309e-04]
+The best polynomial of degree 3 that approximates f(x): 9.9q0^3-13.3q0^2-3.4q0+6.3
+Expansion coeff [0] = -0.43896850454357483
+mu = -0.43896850,V = 0.00019635
+
+____________Manual expansion coefficients__________
+Expansion coeff for N = 1:
+ [-0.4389686  -0.00677291]
+mu_exp = -0.43896860,V_exp = 0.00004587
+Expansion coeff for N = 2:
+ [-0.4389685  -0.00677347  0.01226523]
+mu_exp = -0.43896850,V_exp = 0.00019632
+Expansion coeff for N = 3:
+ [-4.38968505e-01 -6.77346564e-03  1.22652275e-02  1.87316309e-04]
+mu_exp = -0.43896850,V_exp = 0.00019635
