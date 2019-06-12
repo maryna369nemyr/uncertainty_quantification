@@ -70,6 +70,9 @@ if __name__ == '__main__':
     K = [2,4,6]#, 8, 10] # for approximation
     N = [1,2,3]#, 4, 5] # for expansion coefficients
 
+    #K = [1,2,3]
+    #N = [1,2,3]
+
     mu, V = np.zeros(len(N)), np.zeros(len(N))
     mu_expansion, V_expansion= np.zeros(len(N)), np.zeros(len(N))
 
@@ -77,19 +80,21 @@ if __name__ == '__main__':
     orth_polies = []
     for i, n in enumerate(N):
         # generate K Gaussian nodes and weights based on normal distr (we need to appr with quadratures)
-        # appr with gaussian polynomials
         nodes, weights = cp.generate_quadrature(K[i], distr_unif_w, rule = "G") #nodes [[1,2]]
+
+        # approximating with gaussian polynomials
         orth_poly = cp.orth_ttr(N[i], distr_unif_w, normed = True)
-        #orth_polies.append(orth_poly)
+
         #evaluate f(x) at all quadrature nodes and take the y(10), i.e [-1]
         y_out = [discretize_oscillator_odeint(model, init_cond, x_axis, (c, k, f, node), atol, rtol)[-1] for node in nodes[0]]
 
         #print(nodes, weights)
         #print(orth_poly[1](10))
+
         #SUPER STRANGE BUG
         #for j in range(len(orth_poly)):
         #    for k in range(len(nodes[0])):
-        #        continue
+        #       continue
 
 
         # find generalized Polynomial chaos and expansion coefficients
@@ -97,7 +102,7 @@ if __name__ == '__main__':
         #gPC_m = cp.fit_quadrature(orth_poly, nodes, weights, y_out)
 
         # gPC_m is the polynomial that approximates the most
-        print(expansion_coeff)
+        print(f'Expansion coeff chaospy: {expansion_coeff}')
         print(f'The best polynomial of degree {n} that approximates f(x): {cp.around(gPC_m, 1)}')
         #print(f'Expansion coeff [0] = {expansion_coeff[0]}')#, expect_weights: {expect_y}')
 
@@ -109,24 +114,25 @@ if __name__ == '__main__':
 # manual calculation of the expansion coefficients
 #Note if you do it in the same loop, the mean results changing only due to the fact that we do the loop over K[i] without any action
     print("____________Manual expansion coefficients__________")
-    #expansion_coeff_manual = np.zeros((len(N), len(N)))
 
     for i, n in enumerate(N):
         # generate K Gaussian nodes and weights based on normal distr (we need to appr with quadratures)
         nodes, weights = cp.generate_quadrature(K[i], distr_unif_w, rule="G")  # nodes [[1,2]]
+
         # appr with gaussian polynomials
         orth_poly = cp.orth_ttr(N[i], distr_unif_w, normed=True)
 
         # evaluate f(x) at all quadrature nodes and take the y(10), i.e [-1]
         y_out = [discretize_oscillator_odeint(model, init_cond, x_axis, (c, k, f, node), atol, rtol)[-1] for node in
                  nodes[0]]
+
         #print(nodes, weights)
 
         expansion_coeff_manual = np.zeros(len(orth_poly))
         # manual expansion coefficients
         for j in range(len(orth_poly)):
             for k in range(len(nodes[0])):
-                value =  y_out[k] * orth_poly[j](nodes[0][k])* weights[k]
+                #value =  y_out[k] * orth_poly[j](nodes[0][k])* weights[k]
                 #print(f'{(j,k)} - {value}')
                 expansion_coeff_manual[j] += y_out[k] * orth_poly[j](nodes[0][k])* weights[k]
 
@@ -143,10 +149,10 @@ if __name__ == '__main__':
     rel_err_mu_exp = np.abs(1 - mu_expansion / mu_ref)
     rel_err_V_exp = np.abs(1 - V_expansion/ V_ref)
 
-    print(rel_err_V, rel_err_mu)
+    #print(rel_err_V, rel_err_mu)
 
     plot_rel_error(N,rel_err_mu, "mean", "The degree of the polynomials N", 'rx',  loglog_bool = False)
     plot_rel_error(N,rel_err_V, "var", "The degree of the polynomials N", 'gx',  loglog_bool = False)
-    plot_rel_errors(N, rel_err_mu, rel_err_mu_exp, "mean chaospy", "mean exp coeff", False)
+    #plot_rel_errors(N, rel_err_mu, rel_err_mu_exp, "mean chaospy", "mean exp coeff", False)
     #plot_rel_errors(N, rel_err_V, rel_err_V_exp, "var chaospy", "var exp coeff", False)
     #plt.show()
