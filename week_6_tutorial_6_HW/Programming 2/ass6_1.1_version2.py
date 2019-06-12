@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 import random
 import time
 
-
 # to use the odeint function, we need to transform the second order differential equation
 # into a system of two linear equations
 def model(init_cond, t, params):
@@ -133,7 +132,7 @@ def interpolation_at_point2(grid_N, t_max, model, init_cond, params_odeint, atol
 
     return output_interpolation
 
-def interpolation_at_point(cheb_grids, weights_grid, t_max, model, init_cond, params_odeint, atol, rtol):
+def interpolation_at_point(cheb_grids, weights_grid, model, init_cond, params_odeint, atol, rtol):
    # return an array with columns - grid_size
     output_interpolation = np.zeros(len(cheb_grids))
     x_eval = 10.0
@@ -145,6 +144,14 @@ def interpolation_at_point(cheb_grids, weights_grid, t_max, model, init_cond, pa
 
     return output_interpolation
 
+def interpolation(cheb_grids, weights_grid, func_evals, w_eval):
+   # return an array with columns - grid_size
+    output_interpolation = np.zeros(len(cheb_grids))
+    i= 0
+    for cheb_grid, weights, func_eval in zip(cheb_grids, weights_grid, func_evals):
+        output_interpolation[i] = barycentric_interp(w_eval, cheb_grid, func_eval, weights)
+        i+=1
+    return output_interpolation
 
 
 if __name__ == '__main__':
@@ -179,6 +186,21 @@ if __name__ == '__main__':
     #Determenistic interpolation for omega = 1.0
     interpolation_over_nodes(sol_odeint_true, grid_N, t_max, x_axis, model, init_cond, params_odeint, atol, rtol)
 
+    # grid from 0 to t_max, minus - from 0 to t_max not from t_max to 0
+    begin = 0.95
+    end = 1.05
+
+    cheb_grids = [np.array(
+        [0.5 * (end + begin) - 0.5 * (end - begin) * np.cos((2 * j - 1) / (2. * grid_size) * np.pi) for j in range(1, grid_size + 1)])
+                  for grid_size in grid_N]  # len(grid_N)
+    weights_grid = [compute_barycentric_weights(grid) for grid in cheb_grids]
+    func_evals =[]
+
+    for grid in cheb_grids:
+        func_result_eval = np.array([discretize_oscillator_odeint(model, init_cond, x_axis, (c, k, f, grid_point), atol, rtol)[-1] for grid_point in grid])
+        func_evals.append(func_result_eval)
+
+
     for i, n in enumerate(M):
         distr = cp.Uniform(0.95, 1.05)
         w_generated = distr.sample(size=n)
@@ -186,9 +208,9 @@ if __name__ == '__main__':
 
         print("Calculating ... ", n)
 
+
         now_mc = time.time()
         for w_value in w_generated:
-
             params_odeint_new = c, k, f, w_value
             # direct MC sampling
             sol_odeint = discretize_oscillator_odeint(model, init_cond, x_axis, params_odeint_new, atol, rtol)
@@ -196,19 +218,10 @@ if __name__ == '__main__':
         print(f'Time for {n} generated values using MC sampling {time.time() - now_mc}')
 
         now_interpol = time.time()
-
-        # grid from 0 to t_max, minus - from 0 to t_max not from t_max to 0
-        cheb_grids= [np.array([0.5 * t_max - 0.5*t_max* np.cos((2 * j - 1) / (2. * grid_size) * np.pi) for j in range(1, grid_size + 1)])
-                      for grid_size in grid_N] #len(grid_N)
-        weights_grid = [compute_barycentric_weights(grid) for grid in cheb_grids]
-
         output_interpol = []
         for w_value in w_generated:
-            params_odeint_new = c, k, f, w_value
             # using_interpolation
-
-
-            output_interpol.append(interpolation_at_point(cheb_grids, weights_grid, t_max, model, init_cond, params_odeint_new, atol, rtol))
+            output_interpol.append(interpolation(cheb_grids, weights_grid, func_evals, w_value))
         print(f'Time for {n} generated values using interpolation {time.time() - now_interpol}')
 
 
