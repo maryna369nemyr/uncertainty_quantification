@@ -163,26 +163,45 @@ if __name__ == '__main__':
     rel_err_mu_interpol = np.abs(1 - mu_interpol / mu_ref).T
     rel_err_V_interpol = np.abs(1 - V_interpol/ V_ref).T
 
+    print(rel_err_mu)
+    print(rel_err_mu_interpol)
+    print(rel_err_V,rel_err_V_interpol)
 
-    plt.figure("Mean")
-    plt.loglog(M, rel_err_mu, 'r-', label='MC mean')
-    plt.loglog(M, rel_err_mu_interpol[0], 'gx', label='grid 6')
-    plt.loglog(M, rel_err_mu_interpol[1], 'bx', label='grid 11')
-    plt.loglog(M, rel_err_mu_interpol[2], 'yx', label='grid 21')
-    plt.legend(loc='best', fontsize=8)
-    plt.ylabel('Error values')
-    plt.xlabel('Number of samples (loglog)')
+    print("Relative error tables for the mean")
+    print("%7s  %10s  %10s  %10s  %10s" %("samples","MC", "grid 6", "grid 11", "grid 21"))
+    for i in range(len(M)):
+        print("%7d" % M[i], " %.8f  %.8f  %.8f  %.8f" % (rel_err_mu[i],
+                                                      rel_err_mu_interpol[0][i],
+                                                      rel_err_mu_interpol[1][i],
+                                                      rel_err_mu_interpol[2][i]))
+
+    print("Relative error tables for the variance")
+    print("%7s  %10s  %10s  %10s  %10s" %("samples","MC", "grid 6", "grid 11", "grid 21"))
+    for i in range(len(M)):
+        print("%7d" % M[i], " %.8f  %.8f  %.8f  %.8f" % (rel_err_V[i],
+                                                      rel_err_V_interpol[0][i],
+                                                      rel_err_V_interpol[1][i],
+                                                      rel_err_V_interpol[2][i]))
+    if(False):
+        plt.figure("Mean")
+        plt.loglog(M, rel_err_mu, 'r-', label='MC mean')
+        plt.loglog(M, rel_err_mu_interpol[0], 'gx', label='grid 6')
+        plt.loglog(M, rel_err_mu_interpol[1], 'bx', label='grid 11')
+        plt.loglog(M, rel_err_mu_interpol[2], 'yx', label='grid 21')
+        plt.legend(loc='best', fontsize=8)
+        plt.ylabel('Error values')
+        plt.xlabel('Number of samples (loglog)')
 
 
 
-    plt.figure("Variance")
-    plt.loglog(M, rel_err_V, 'r-', label='MC variance')
-    plt.loglog(M, rel_err_V_interpol[0], 'gx', label='grid 6')
-    plt.loglog(M, rel_err_V_interpol[1], 'bx', label='grid 11')
-    plt.loglog(M, rel_err_V_interpol[2], 'yx', label='grid 21')
-    plt.legend(loc='best', fontsize=8)
-    plt.ylabel('Error values')
-    plt.xlabel('Number of samples (loglog)')
-    plt.show()
+        plt.figure("Variance")
+        plt.loglog(M, rel_err_V, 'r-', label='MC variance')
+        plt.loglog(M, rel_err_V_interpol[0], 'gx', label='grid 6')
+        plt.loglog(M, rel_err_V_interpol[1], 'bx', label='grid 11')
+        plt.loglog(M, rel_err_V_interpol[2], 'yx', label='grid 21')
+        plt.legend(loc='best', fontsize=8)
+        plt.ylabel('Error values')
+        plt.xlabel('Number of samples (loglog)')
+        plt.show()
 
 
