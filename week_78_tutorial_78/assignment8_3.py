@@ -25,6 +25,7 @@ if __name__ == '__main__':
         # since we are in 5 dim case we need to generate k points in 5
         # here it is automatically
         # nodes = (k+1)**d
+        print("Dimensions of nodes")
         print(nodes.shape)
         x1,x2,x3,x4,x5 = nodes
 
@@ -57,6 +58,7 @@ if __name__ == '__main__':
         # since we are in 5 dim case we need to generate k points in 5
         # here it is automatically
         # nodes = (k+1)**d
+        print("Dimensions of nodes")
         print(nodes.shape)
         x1,x2,x3,x4,x5 = nodes
 
