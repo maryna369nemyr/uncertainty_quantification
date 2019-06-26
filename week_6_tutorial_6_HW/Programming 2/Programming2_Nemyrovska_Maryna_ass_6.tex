@@ -1,0 +1,302 @@
+\documentclass[11pt]{article}
+
+% ------------------------------------------------------------------------------
+% This is all preamble stuff that you don't have to worry about.
+% Head down to where it says "Start here"
+% ------------------------------------------------------------------------------
+
+\usepackage[margin=.8in,top=1.1in,bottom=1.1in]{geometry} % page layout
+\usepackage{amsmath,amsthm,amssymb,amsfonts} % math things
+\usepackage{graphicx} % include graphics
+\usepackage{fancyhdr} % header customization
+\usepackage{titlesec} % help with section naming
+\usepackage{amsmath}
+\usepackage{listings}
+
+
+% naming sections
+%\titleformat{\section}{\bf}{Assignment \thesection}{0.5em}{}
+%\newcommand{\ass}{\section{}}
+
+\titleformat{\subsection}{\bf}{Assignment \thesubsection}{0.5em}{}
+\newcommand{\subass}{\subsection{}}
+\newcommand{\report}{\textbf{Report: \\}}
+% headers
+\pagestyle{fancy} 
+\fancyhf{} % clear all
+\fancyhead[L]{\sffamily\small Algorithms for Uncertainty Quantification}
+\fancyhead[R]{\sffamily\small page \thepage}
+\renewcommand{\headrulewidth}{0.2pt}
+\renewcommand{\footrulewidth}{0.2pt}
+\markright{\hrulefill\quad}
+
+\newcommand{\hwhead}[4]{
+\begin{center}
+\sffamily\large\bfseries Programming 2: Polynomial chaos approximation
+\vspace{2mm} 
+\normalfont
+
+#2 -- #3 %-- \texttt{#4}
+\end{center}
+\vspace{6mm} \hrule \vspace{4mm}
+}
+
+% ------------------------------------------------------------------------------
+% Start here -- Fill in your name, imat and email
+% ------------------------------------------------------------------------------
+
+\newcommand{\name}{Maryna Nemyrovska} %
+\newcommand{\imat}{ Matrikel-Nr. 03694104} %
+
+\lstset{
+%numbers=left, 
+numberstyle=\small, 
+numbersep=8pt, 
+frame = single, 
+language=Python, 
+framexleftmargin=15pt}
+
+
+\begin{document}
+
+% ------------------------------------------------------------------------------
+% Change xx (and only xx) to the current sheet number
+% ------------------------------------------------------------------------------
+\hwhead{xx}{\name}{\imat}{\email}
+
+% ------------------------------------------------------------------------------
+% Fill in your solutions
+% ------------------------------------------------------------------------------
+
+\section{Lagrange Interpolation} % each new exercise begins with this command
+\subass
+\report
+While running a code we obtain the following results concerning required times to complete calculations of the mean and variance via MC sampling and using Lagrange interpolation respectively.\par
+It is easy to see that calculation of the mean and variance is significantly faster than calculations via MC sampling (almost in 40 times).
+This can be explained by the fact, that we have only $N$ function evaluations on the interpolation grid, as well as we precalculated all weights for the Lagrange interpolation via barycentric form. After that we have our precalculated Lagrange interpolant and we can easily find the value at a new generated point $\omega \sim U(0.95, 1.05)$.
+
+\begin{lstlisting}
+Calculating ...  10
+Time for 10 generated values using MC sampling 0.021823644638061523
+Time for 10 generated values using interpolation 0.0004892349243164062
+
+Calculating ...  100
+Time for 100 generated values using MC sampling 0.24865460395812988
+Time for 100 generated values using interpolation 0.009408712387084961
+
+Calculating ...  1000
+Time for 1000 generated values using MC sampling 2.285736322402954
+Time for 1000 generated values using interpolation 0.048521995544433594
+\end{lstlisting}
+
+Moreover, the results below also show that the relative errors are low too, so having a grid that consists of only 11 points (or approximation polynomial of degree 10) is enough to have decent results.
+\begin{lstlisting}
+Relative error tables for the mean
+samples          MC      grid 6     grid 11     grid 21
+     10  0.01150391  0.01150393  0.01150391  0.01150391
+    100  0.00068327  0.00068329  0.00068327  0.00068327
+   1000  0.00071345  0.00071345  0.00071345  0.00071345
+Relative error tables for the variance
+samples          MC      grid 6     grid 11     grid 21
+     10  0.81751375  0.81751467  0.81751376  0.81751376
+    100  0.19646911  0.19647244  0.19646911  0.19646911
+   1000  0.03435373  0.03435264  0.03435373  0.03435373
+\end{lstlisting}
+%\begin{center}
+%\begin{tabular}{ |l|l|l|l|l| } 
+%% \hline
+ %samples & MC & grid 6 & grid 11 \\ 
+ %\hline
+ %cell1 & cell2 & cell3 \\ 
+ %cell4 & cell5 & cell6 \\ 
+ %cell7 & cell8 & cell9 \\ 
+ %\hline
+%\end{tabular}
+%\end{center}
+
+
+\section{Orthogonal polynomials}
+\subass
+We can check if two polynomials are orthogonal (orthonormal) by computing the expected value $$\mathds{E} [\phi_i (X) \cdot \phi_j(X)].$$
+$\blacksquare$
+Assuming that the expectation was taking wrt to the density $\rho(x)$, we have
+$$\mathds{E} [\phi_i (X) \cdot \phi_j(X)] = \mathds{E}_\rho [\phi_i (X) \cdot \phi_j(X)]  \overset{def}{=} \int_{ {dom} X} \phi_i (x)  \phi_j(x) \rho(x) dx  = \langle \phi_i (x) , \phi_j(x) \rangle_\rho.$$
+
+We also know that two polynomials $\phi_i (x) , \phi_j(x)$ are orthogonal (orthonormal when $\gamma_i = 1$) if
+$$  \langle \phi_i (x) , \phi_j(x) \rangle_\rho = \gamma_i \cdot \delta_{i,j}.$$
+
+So we have the following rule:
+\begin{center}
+\begin{cases} 
+\mathds{E} [\phi_i (X) \cdot \phi_j(X)] = 0, & \mbox{then } \phi_i (x) , \phi_j(x) \mbox{ are orthogonal} \\ 
+\mathds{E} [\phi_i (X) \cdot \phi_j(X)] > 0, & \mbox{then } \phi_i (x) , \phi_j(x) \mbox{ are not orthogonal } \blacksquare.
+\end{cases}
+\end{center}
+
+\subass
+\textbf{chaospy} python package allows to generate orthogonal polynomials. The coefficients of these polynomials are approximated, and as a consequence, polynomials are nearly orthogonal to each other, i.e. they are orthogonal with some error. The code was designed to issue whether every pair of generated polynomials are orthogonal to each other with $ \biggl \lvert{ E[\phi_i (X) \cdot \phi_j(X)] } \biggr \rvert < \epsilon, \quad i \neq j$. One can find the output of the code attached below.
+
+\begin{lstlisting}
+______________________________
+[[1. 0. 0.]
+ [0. 1. 0.]
+ [0. 0. 1.]]
+Orthonormal polynomials wrt UNIFORM distr with N = 2: True
+______________________________
+[[ 1.  0.  0.]
+ [ 0.  1.  0.]
+ [ 0. -0.  1.]]
+Orthonormal polynomials wrt NORMAL distr with N = 2: True
+______________________________
+______________________________
+[[ 1.  0.  0.  0.  0.  0.]
+ [ 0.  1.  0.  0.  0.  0.]
+ [ 0.  0.  1.  0.  0.  0.]
+ [ 0.  0.  0.  1.  0.  0.]
+ [ 0.  0. -0.  0.  1.  0.]
+ [ 0. -0.  0.  0.  0.  1.]]
+Orthonormal polynomials wrt UNIFORM distr with N = 5: True
+______________________________
+[[ 1.  0.  0.  0.  0.  0.]
+ [ 0.  1.  0.  0.  0.  0.]
+ [ 0. -0.  1.  0.  0.  0.]
+ [-0.  0.  0.  1.  0.  0.]
+ [ 0. -0.  0. -0.  1.  0.]
+ [-0. -0.  0. -0. -0.  1.]]
+Orthonormal polynomials wrt NORMAL distr with N = 5: True
+_______________________________________
+_______________________________________
+[[ 1.  0.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  1.  0.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  1.  0.  0.  0.  0.  0.  0.]
+ [ 0.  0.  0.  1.  0.  0.  0.  0.  0.]
+ [ 0.  0. -0.  0.  1.  0.  0.  0.  0.]
+ [ 0. -0.  0.  0.  0.  1.  0.  0.  0.]
+ [-0.  0.  0.  0. -0.  0.  1.  0.  0.]
+ [ 0.  0.  0.  0.  0. -0.  0.  1.  0.]
+ [ 0.  0.  0.  0.  0.  0.  0.  0.  1.]]
+Orthonormal polynomials wrt UNIFORM distr with N = 8: True
+_________________________________________
+Not orthonormal (7, 6) according to precision 0.0001: 0.00262451171875
+Not orthonormal (8, 5) according to precision 0.0001: -0.00225067138671875
+Not orthonormal (8, 6) according to precision 0.0001: 0.01446533203125
+Not orthonormal (8, 7) according to precision 0.0001: -0.002777099609375
+[[ 1.0000e+00  0.0000e+00  0.0000e+00  0.0000e+00  0.0000e+00  0.0000e+00
+   0.0000e+00  0.0000e+00  0.0000e+00]
+ [ 0.0000e+00  1.0000e+00  0.0000e+00  0.0000e+00  0.0000e+00  0.0000e+00
+   0.0000e+00  0.0000e+00  0.0000e+00]
+ [ 0.0000e+00 -0.0000e+00  1.0000e+00  0.0000e+00  0.0000e+00  0.0000e+00
+   0.0000e+00  0.0000e+00  0.0000e+00]
+ [-0.0000e+00  0.0000e+00  0.0000e+00  1.0000e+00  0.0000e+00  0.0000e+00
+   0.0000e+00  0.0000e+00  0.0000e+00]
+ [ 0.0000e+00 -0.0000e+00  0.0000e+00 -0.0000e+00  1.0000e+00  0.0000e+00
+   0.0000e+00  0.0000e+00  0.0000e+00]
+ [-0.0000e+00 -0.0000e+00  0.0000e+00 -0.0000e+00 -0.0000e+00  1.0000e+00
+   0.0000e+00  0.0000e+00  0.0000e+00]
+ [ 0.0000e+00  0.0000e+00  0.0000e+00 -0.0000e+00 -0.0000e+00 -1.0000e-04
+   9.9980e-01  0.0000e+00  0.0000e+00]
+ [ 0.0000e+00  0.0000e+00 -0.0000e+00 -0.0000e+00  0.0000e+00 -0.0000e+00
+   2.6000e-03  1.0114e+00  0.0000e+00]
+ [-0.0000e+00  0.0000e+00  0.0000e+00  0.0000e+00 -0.0000e+00 -2.3000e-03
+   1.4500e-02 -2.8000e-03  1.0160e-01]]
+Orthonormal polynomials wrt NORMAL distr with N = 8: False
+_________________________________________
+\end{lstlisting}
+
+\section{Probabilistic collocation: the pseudo-spectral approach}
+\subass
+For fixed $t$, show that the mean and variance of $f^N(t,\omega) = \sum_{i = 0}^{N-1} \hat{f_i}(t) \phi_i(\omega)$ are given as 
+$$\mathds{E} [f(t, \omega)] =  \hat{f_0}(t),$$
+$$ Var[f(t,\omega)] = \sum_{i = 1}^{N-1} \hat{f_i}(t)^2. $$
+$\blacksquare$
+$$\mathds{E} [f(t, \omega)] \approx \mathds{E} [f^N(t, \omega)] = \mathds{E} \biggl[\sum_{i = 0}^{N-1} \hat{f_i}(t) \phi_i(\omega)\biggr]  = \sum_{i = 0}^{N-1} \hat{f_i}(t) \mathds{E}[\phi_i(\omega) \cdot 1] \overset{\phi_0 \equiv 1 }{=} $$
+$$ =\sum_{i = 0}^{N-1} \hat{f_i}(t) \langle \phi_i (\omega), \phi_0 (\omega)  \rangle_\rho = \sum_{i = 0}^{N-1} \hat{f_i}(t) \delta_{0,i} \overset{orth}{=} \hat{f_0}(t).$$
+
+$$Var [f(t, \omega)] \approx Var [f^N(t, \omega)] =  \mathds{E}\biggl [\biggl(f^N(t, \omega) - \mathds{E}[f^N(t, \omega)]\biggr)^2 \biggr ] = \biggl \lvert \mathds{E}[f^N(t, \omega)] = \hat{f_0}(t) \biggr\rvert = $$
+$$ = \mathds{E}\biggl [\biggl(\sum_{i = 0}^{N-1} \hat{f_i}(t) \phi_i(\omega) -  \hat{f_0}(t) \biggr)^2 \biggr ] = 
+\mathds{E}\biggl [\biggl(\sum_{i = 1}^{N-1} \hat{f_i}(t) \phi_i(\omega)  + \hat{f_0}(t) - \hat{f_0}(t) \biggr)^2 \biggr ] = 
+\mathds{E}\biggl [\biggl(\sum_{i = 1}^{N-1} \hat{f_i}(t) \phi_i(\omega) \biggr)^2 \biggr ] = 
+$$
+$$
+= \mathds{E}\biggl [\biggl(\sum_{i, j = 1}^{N-1} \hat{f_i}(t) \hat{f_j}(t) \phi_i(\omega) \phi_j(\omega) \biggr) \biggr ]
+= \sum_{i, j = 1}^{N-1} \hat{f_i}(t) \hat{f_j}(t) \cdot \mathds{E} \biggl[ \phi_i(\omega) \phi_j(\omega)\biggr] 
+= \sum_{i, j = 1}^{N-1} \hat{f_i}(t) \hat{f_j}(t)\cdot \langle \phi_i(\omega), \phi_j(\omega) \rangle_\rho =
+$$
+$$
+=\sum_{i, j = 1}^{N-1} \hat{f_i}(t) \hat{f_j}(t) \cdot \delta_{i,j} 
+\overset{orth}{=} \sum_{i = 1}^{N-1} \hat{f_i}^2(t) \quad \blacksquare.
+$$
+\section{The pseudo-spectral approach in Chaospy}
+\subass
+Here we have changed $K = [1,2,3]$ and $N = [2,4,6]$ into $K = [2,4,6]$ and $N = [1,2,3]$ as otherwise the program (chaospy function) was issuing $NaN$ as coefficients of the polynomial, and it is understandable, as it is impossible to approximate the polynomial of a degree $N=2$ via $K = 1$, i.e two values of nodes and weights.
+
+In general way we have the rule: $2N =  P(K)$ where $P(K)$ is a degree of the polynomial of exactness.
+So we need to choose the number of quadratures $K$ such that the next equality holds:
+$$ \int \phi_i(\omega) \phi_j(\omega) \rho(\omega) d\omega \approx \sum_{k=0}^{K -1} \phi_i(x_k) \phi_j(x_k) w_k, $$
+where $x_k, w_k$ are nodes and weights respectively.
+
+If the maximum degree of polynomial $\phi_i(\omega), \quad \forall i \in \overline{0, N-1}$ is $N$, then the product will be a polynomial of a max degree $(N-1)+ (N-1)  =2(N-1)$.
+
+Thus we need $2(N-1) = P(K)$. Let us consider the case of the Gaussian quadratures. We know that according to the theorem mentioned during lectures, Gaussian quadratures approximate polynomials up to degree $2K - 1$ with the error $0$. Also we know that the more nodes we use in polynomials, the better is the approximation.
+
+So we end up with $2N - 2  =2K -1 \iff N = K + 0.5 \Rightarrow N=K. $
+
+Some further notes:
+\begin{enumerate}
+    \item If we want to approximate a r.v. $\eta \sim U(a,b)$, then use Legendre orthogonal polynomials;
+    \item If we want to approximate a r.v. $\eta \sim N(\mu,\sigma)$, then use Hermite orthogonal polynomials.
+\end{enumerate}
+
+\textbf{Comparison of chaospy and manual} implementations to compute the expansion coefficients. The coefficients appeared to be identical in both cases.\\
+
+\begin{lstlisting}
+Expansion coeff chaospy: [-0.4389686  -0.00677291]
+The best polynomial of degree 1 that approximates f(x):
+                                            -0.2q0-0.2
+
+mu = -0.43896860, V = 0.00004587
+Expansion coeff chaospy: [-0.4389685  -0.00677347  0.01226523]
+The best polynomial of degree 2 that approximates f(x):
+                                    16.5q0^2-33.1q0+16.2
+
+mu = -0.43896850, V = 0.00019632
+Expansion coeff chaospy: 
+[-4.38968505e-01 -6.77346564e-03  1.22652275e-02  1.87316309e-04]
+The best polynomial of degree 3 that approximates f(x):
+                            9.9q0^3-13.3q0^2-3.4q0+6.3
+
+mu = -0.43896850, V = 0.00019635
+
+____________Manual expansion coefficients__________
+Expansion coeff for N = 1:
+ [-0.4389686  -0.00677291]
+mu_exp = -0.43896860, V_exp = 0.00004587
+
+Expansion coeff for N = 2:
+ [-0.4389685  -0.00677347  0.01226523]
+mu_exp = -0.43896850, V_exp = 0.00019632
+
+Expansion coeff for N = 3:
+ [-4.38968505e-01 -6.77346564e-03  1.22652275e-02  1.87316309e-04]
+mu_exp = -0.43896850, V_exp = 0.00019635
+\end{lstlisting}
+\newpage
+Consequently, the relative errors are also identical. One can observe it from the output table.
+Here for the maximum degree of polynomial $N = 1$ the corresponding number of nodes is $K = 2$ and so on.
+\begin{lstlisting}
+Relative error tables for the mean
+max degree of poly     chaospy      manual
+                 1  0.00007192  0.00007192
+                 2  0.00007171  0.00007171
+                 3  0.00007171  0.00007171
+Relative error tables for the variance
+max degree of poly     chaospy      manual
+                 1  0.76688528  0.76688528
+                 2  0.00235977  0.00235977
+                 3  0.00218147  0.00218147
+\end{lstlisting}
+
+\end{document}
+
+
+
