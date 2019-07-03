@@ -1,0 +1,4 @@
+Question: 
+ass 2.1
+_______
+We generate one r.v ~ multivariate normal distribution (N**2, 1), but then we receive a m.r.v (N**2, 1) after transformation = > random field of the shape (N,N), when we reshape a multivariate vector.
