@@ -58,10 +58,27 @@ if __name__ == '__main__':
     t           = np.array([i*dt for i in range(grid_size)])
     t_interest  = len(t)/2
 
+
     # create the orthogonal polynomials
 
     #################### full grid computations #####################
+    joint_distr = cp.J(distr_c, distr_k,  distr_f, distr_y0, distr_y1)
     # get the non-sparse quadrature nodes and weight
+    nodes, weights = cp.generate_quadrature(quad_deg_1D, joint_distr, rule='G', sparse=True)
+    c,k,f,y0,y1 = nodes
+   #print(c.shape)
+    poly = cp.orth_ttr(poly_deg_1D, joint_distr, normed=True)
+
+    y_out = [discretize_oscillator_odeint(model, atol, rtol, (y0_,y1_), (c_,k_,f_,w), t, t_interest) for y0_,y1_,c_,k_,f_ in zip(c,k,f,y0,y1)]
+
+    # find generalized Polynomial chaos and expansion coefficients
+    gPC_m, expansion_coeff = cp.fit_quadrature(poly, nodes, weights, y_out, retall=True)
+
+    # gPC_m is the polynomial that approximates the most
+    print(f'Expansion coeff [0] = {expansion_coeff[0]}')  # , expect_weights: {expect_y}')
+
+    mu = cp.E(gPC_m, joint_distr)
+    print(f'Mean value from gPCE: {mu}')
 
     # create vector to save the solution
 
