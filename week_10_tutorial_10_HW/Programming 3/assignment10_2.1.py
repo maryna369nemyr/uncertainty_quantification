@@ -55,16 +55,8 @@ def squared_exp_kernel(points, l):
                 cov[i][j] = cov[i][j] + 0.00000001 # to make matrix psd for sure
     return cov
 
-def generate_heat_map(N, mean_vec, L, samples, figure_name):
+def generate_heat_map(N, mean_vec, L, samples, figure_name, axis):
 
-    #mean_std =np.zeros(N**2)
-    #cov_std  =np.identity(N**2)
-    #samples = np.random.multivariate_normal(mean_std, cov_std, 1)
-
-    #samples should be one vector in R^100
-    #samples.shape = (1, N**2)
-
-    # shape is 1, N**2
     gaussian_RF =  mean_vec + np.matmul(L, samples.T)
     # gives (N**2, N**2) where all columns are identical
     gaussian_RF  = gaussian_RF[:,0]
@@ -72,16 +64,16 @@ def generate_heat_map(N, mean_vec, L, samples, figure_name):
     # going back to our initial grid
     gaussian_RF = np.reshape(gaussian_RF, (N,N))
     #shape (N, N) what we are interested in
-    plt.figure(figure_name)
-    plt.imshow(gaussian_RF, cmap = "coolwarm")
-    plt.savefig(figure_name + '.png')
+    #plt.figure(figure_name)
+
+    axis.imshow(gaussian_RF, cmap = "coolwarm")
+    axis.set_title(figure_name)
+    #plt.savefig(figure_name + '.png')
     #plt.savefig('./output_pictures/' + figure_name + '.png')
-
-
 
 if __name__== '__main__':
     N =  40
-    l = 1.0
+    l = 1.00 #0.05 and mean 0.5
     mean_func = np.array([0.1]*N**2)
     points  = create_grid(N, N)
     print(f"We have generated {len(points)} number of points")
@@ -95,11 +87,19 @@ if __name__== '__main__':
     L_cov_exp = np.linalg.cholesky(cov_exp) #shape N**2, N**2
     L_cov_sq_exp  = np.linalg.cholesky(cov_sq_exp)
     print("Generating heatmaps for Gaussian random fields...")
+
+    fig, axes = plt.subplots(2, 3)
+    #plt.plot()
+
     for i in range(3):
         mean_std = np.zeros(N ** 2)
         cov_std = np.identity(N ** 2)
         samples = np.random.multivariate_normal(mean_std, cov_std, 1)
-        generate_heat_map(N, mean_func, L_cov_exp, samples,  "Exp kernel_" + str(i))
-        generate_heat_map(N, mean_func, L_cov_sq_exp, samples, "Squared exp kernel_"+ str(i))
+        # samples should be one vector in R^100
+        # samples.shape = (1, N**2)
+
+        generate_heat_map(N, mean_func, L_cov_exp, samples,  "Exp kernel_" + str(i), axes[0,i])
+        generate_heat_map(N, mean_func, L_cov_sq_exp, samples, "Sq exp kernel_"+ str(i), axes[1,i])
+    plt.savefig('result_gaussian_random_fields.png')
     plt.show()
 
