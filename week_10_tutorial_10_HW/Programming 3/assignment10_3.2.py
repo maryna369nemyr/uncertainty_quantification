@@ -32,10 +32,28 @@ def wiener_process(t_vector, f_mean):
     W = np.insert(W, 0, f_mean)
     return W
 
+def wiener_process_dt1(dt, f_mean, N):
+    #this is not the same as wiener_process starting from mean or generating rv with mean
+    dW = np.sqrt(dt) * np.random.normal(0,1, N - 1)
+    W = np.cumsum(dW)
+    #W = np.insert(W, 0, f_mean)
+    #return W
+    W = np.insert(W, 0, 0)
+    return W + f_mean
+
 def wiener_process_dt(dt, f_mean, N):
     dW = np.sqrt(dt) * np.random.normal(0,1, N - 1)
     W = np.cumsum(dW)
+    #W = np.insert(W, 0, f_mean)
+    #return W
     W = np.insert(W, 0, f_mean)
+    return W
+def wiener_process_dt2(dt, f_mean, N):
+    dW = np.random.normal(f_mean ,dt, N - 1)
+    W = np.cumsum(dW)
+    #W = np.insert(W, 0, f_mean)
+    #return W
+    W = np.insert(W, 0, 0)
     return W
 
 
@@ -64,7 +82,6 @@ def karhunen_loeve_expansion_vector(generated_samples, m, t_vector, T_max,f_mean
 
 def plot_processes_via_expansions(M, t, output_processes, show = True):
 
-    colors = ['r', 'g','b']
     #in reverse order so that the worse approximation is on the top of a better approximation
     for i in range(len(M)):
         plt.figure("Expansion_f M = " + str(M[len(M)-i-1]))
@@ -77,7 +94,7 @@ def plot_processes_via_expansions(M, t, output_processes, show = True):
         plt.show()
 
 if __name__ == '__main__':
-    np.random.seed(130)
+    #np.random.seed(130)
     #parameters setup
     c = 0.5
     k = 2.0
@@ -99,8 +116,7 @@ if __name__ == '__main__':
 
     #wiener_f = wiener_process(t, f_mean)
     #plot_wiener(wiener_f, t) #gives the same result with a fixed seed
-
-    wiener_f = wiener_process_dt(dt, f_mean, N_t_axis)
+    wiener_f = wiener_process_dt2(dt, f_mean, N_t_axis)
     #plot_wiener(wiener_f, t, False) # gives the same result with a fixe sid
 
 
@@ -111,7 +127,7 @@ if __name__ == '__main__':
     ode_wiener_10=[]
 
     #from Wiener
-    plt.figure("with wiener")
+    plt.figure("With wiener def")
     for i in range(n_mc):
         # for each monte carlo sampling
         f_generated = wiener_process_dt(dt, f_mean, N_t_axis)
@@ -139,14 +155,9 @@ if __name__ == '__main__':
 
     # Karhunen Loeve expansion
     M = [5, 100, 1000]
-
-
     f_appr_generated = np.zeros((len(M), len(t)))
     ode_wiener_KL = np.zeros((n_mc, len(M), len(t)))
     ode_wiener_KL_10= np.zeros((n_mc, len(M)))
-
-    #now do oscillator
-    #plt.figure("Kahuren-Loeve appr")
 
     for l in range(n_mc):
         generated_samples =  np.random.normal(0, 1, max(M))
@@ -160,7 +171,7 @@ if __name__ == '__main__':
             ode_wiener_KL[l][m_idx] = output
             ode_wiener_KL_10[l][m_idx] = output[-1]
             plt.plot(t, output)
-        plot_processes_via_expansions(M, t, f_appr_generated, False)
+        #plot_processes_via_expansions(M, t, f_appr_generated, False)
 
     mean_mc = np.mean(ode_wiener_KL, axis = 0)
     var_mc = np.var(ode_wiener_KL, axis=0, ddof  = 1)
