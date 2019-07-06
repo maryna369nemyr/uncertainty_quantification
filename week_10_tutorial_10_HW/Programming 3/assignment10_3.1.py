@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 def wiener_process(generated_samples, dt):
     dW = np.sqrt(dt) * generated_samples # np.random.normal(0, dt, N) # times sqrt (t-s) when we generate via standard Normal
     return np.cumsum(dW)
+
 def generate_plot_wiener(generated_samples,N, show = True):
     dt = 1 / N  # t_max / N
     wiener = wiener_process(generated_samples, dt)
@@ -22,7 +23,7 @@ def plot_processes_via_expnsions(M, t, output_processes, show = True):
     plt.figure("Wiener_process")
     colors = ['r', 'g','b']
     #in reverse order so that the worse approximation is on the top of a better approximation
-    for i in range(M):
+    for i in range(len(M)):
         plt.plot(t, output_processes[len(M) - i-1], color=colors[i], linestyle='dashed', label='M = ' + str(M[len(M)-i-1]))
     plt.ylabel('W(t)')
     plt.xlabel('t')
