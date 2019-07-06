@@ -2,15 +2,34 @@ import numpy as np
 import chaospy as cp
 import matplotlib.pyplot as plt
 
-
+def add_zero(input):
+    input  =np.insert(input, 0,0)
+    return input #input[:-1]
 
 def wiener_process(generated_samples, dt):
-    dW = np.sqrt(dt) * generated_samples # np.random.normal(0, dt, N) # times sqrt (t-s) when we generate via standard Normal
-    return np.cumsum(dW)
+    dW = np.sqrt(dt) * generated_samples[0:(len(generated_samples)-1)]
+    #print("In cumsum", dW)
+    # np.random.normal(0, dt, N) # times sqrt (t-s) when we generate via standard Normal
+    dW = np.cumsum(dW)
+    dW = add_zero(dW)
+    return dW
+
+def wiener_process_2(generated_samples, N):
+    W 	= np.zeros(N)
+    dW 	= np.zeros(N)
+    dt = 1/N
+
+    for i in range(1,N):
+        dW[i] 	= np.sqrt(dt)* generated_samples[i - 1]
+        W[i] 	= W[i - 1] + dW[i]
+    #print("In literal", dW)
+    return W
 
 def generate_plot_wiener(generated_samples,N, show = True):
     dt = 1 / N  # t_max / N
     wiener = wiener_process(generated_samples, dt)
+    #wiener = wiener_process_2(generated_samples, N)
+    #print("Wiener\n", wiener, wiener2)
     x_axis = np.linspace(0, 1, N, endpoint=True)
     plt.figure("Wiener_process")
     plt.plot(x_axis, wiener, '-k', label='Wiener')
@@ -68,10 +87,8 @@ if __name__ == '__main__':
     #plt.show()
     ##
     # Karhunen Loeve expansion
-
-    #print(len(generated_samples[0:M[0]]))
     t = np.linspace(0, 1, N, endpoint=True)
-    print(t)
+
 
     #print(eigen_vectors(np.array(vector_lambda), 0.333))
     output_processes = np.zeros((len(M), len(t)))
@@ -80,8 +97,10 @@ if __name__ == '__main__':
     for i, m in enumerate(M):
         for j, t_point in enumerate(t):
             output_processes[i][j] = karhunen_loeve_expansion(generated_samples, m, t_point)
-
-    #M [::-1] reverses the list for
+    print(output_processes[0][0:10])
+    print(output_processes[1][0:10])
+    print(output_processes[2][0:10])
+    #M [::-1] reverses the liadd_zero(dW)st for
     plot_processes_via_expnsions(M,t,output_processes)
 
 
