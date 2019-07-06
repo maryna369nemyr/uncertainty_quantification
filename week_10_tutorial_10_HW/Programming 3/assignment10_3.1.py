@@ -31,10 +31,13 @@ def generate_plot_wiener(generated_samples,N, show = True):
     #wiener = wiener_process_2(generated_samples, N)
     #print("Wiener\n", wiener, wiener2)
     x_axis = np.linspace(0, 1, N, endpoint=True)
-    plt.figure("Wiener_process")
+    plt.figure("Wiener process std")
     plt.plot(x_axis, wiener, '-k', label='Wiener')
+    plt.ylabel('W(t)')
+    plt.xlabel('t')
+    plt.legend(loc='best', fontsize=12)
 
-    #plt.savefig(figure_name + '.png')
+    plt.savefig("Wiener_std" + '.png')
     if show:
         plt.show()
 
@@ -43,14 +46,14 @@ def plot_processes_via_expnsions(M, t, output_processes, show = True):
     colors = ['r', 'g','b']
     #in reverse order so that the worse approximation is on the top of a better approximation
     for i in range(len(M)):
-        plt.plot(t, output_processes[len(M) - i-1], color=colors[i], linestyle='dashed', label='M = ' + str(M[len(M)-i-1]))
+        plt.plot(t, output_processes[len(M) - i-1], color=colors[i], linestyle='-', label='M = ' + str(M[len(M)-i-1]))
     plt.ylabel('W(t)')
     plt.xlabel('t')
     plt.legend(loc='best', fontsize=12)
     #plt.ylabel('W(t)')
     #plt.xlabel('t')
     #plt.legend(loc='best', fontsize=12)
-    #plt.savefig(figure_name + '.png')
+    plt.savefig("Wiener_expansions" + '.png')
     if show:
         plt.show()
 
@@ -58,9 +61,9 @@ def plot_processes_via_expnsions(M, t, output_processes, show = True):
 def karhunen_loeve_expansion(generated_samples, m, t_point):
     samples = generated_samples[0:m]
     idx_n =  np.linspace(1, m, m)
-    #print(len(np.sqrt(eigen_values(idx_n))*eigen_vectors(idx_n, t_point)*samples))
     W_t = np.sum(
                 np.sqrt(eigen_values(idx_n))*eigen_vectors(idx_n, t_point)*samples)
+
     return W_t
 
 
@@ -84,7 +87,7 @@ if __name__ == '__main__':
     eigen_values_wiener = eigen_values(vector_lambda)
     plt.figure("Eigen values of Wiener process")
     plt.plot(vector_lambda, eigen_values(vector_lambda), '--r', label = "eigen values")
-    #plt.show()
+    plt.savefig("Eigen_values" + '.png')
     ##
     # Karhunen Loeve expansion
     t = np.linspace(0, 1, N, endpoint=True)
