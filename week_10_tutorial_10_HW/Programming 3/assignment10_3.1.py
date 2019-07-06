@@ -22,7 +22,7 @@ def wiener_process_2(generated_samples, N):
     for i in range(1,N):
         dW[i] 	= np.sqrt(dt)* generated_samples[i - 1]
         W[i] 	= W[i - 1] + dW[i]
-    #print("In literal", dW)
+
     return W
 
 def generate_plot_wiener(generated_samples,N, show = True):
@@ -50,9 +50,6 @@ def plot_processes_via_expnsions(M, t, output_processes, show = True):
     plt.ylabel('W(t)')
     plt.xlabel('t')
     plt.legend(loc='best', fontsize=12)
-    #plt.ylabel('W(t)')
-    #plt.xlabel('t')
-    #plt.legend(loc='best', fontsize=12)
     plt.savefig("Wiener_expansions" + '.png')
     if show:
         plt.show()
@@ -79,31 +76,23 @@ if __name__ == '__main__':
     #Eigen values for Wiener process
     eigen_values  = lambda x:  1./ (((x + 0.5)**2) * (np.pi**2))
     eigen_vectors = lambda x, t: np.sqrt(2)* np.sin((x+ 0.5)*np.pi * t)
-    #test = lambda x, t: (x - 0.5) * np.pi * t
 
     vector_lambda = np.linspace(1, M_lambda,M_lambda)  # n in the sum from 1 to M
-    #print(eigen_values(vector_lambda))
-    ##
+
     eigen_values_wiener = eigen_values(vector_lambda)
     plt.figure("Eigen values of Wiener process")
     plt.plot(vector_lambda, eigen_values(vector_lambda), '--r', label = "eigen values")
     plt.savefig("Eigen_values" + '.png')
     ##
+
     # Karhunen Loeve expansion
     t = np.linspace(0, 1, N, endpoint=True)
-
-
-    #print(eigen_vectors(np.array(vector_lambda), 0.333))
     output_processes = np.zeros((len(M), len(t)))
     # rows M=10, ... M= 100
     # columns time [0 .. 1]
     for i, m in enumerate(M):
         for j, t_point in enumerate(t):
             output_processes[i][j] = karhunen_loeve_expansion(generated_samples, m, t_point)
-    print(output_processes[0][0:10])
-    print(output_processes[1][0:10])
-    print(output_processes[2][0:10])
-    #M [::-1] reverses the liadd_zero(dW)st for
     plot_processes_via_expnsions(M,t,output_processes)
 
 
