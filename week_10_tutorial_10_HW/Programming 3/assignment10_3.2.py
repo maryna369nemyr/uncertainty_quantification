@@ -41,6 +41,7 @@ def wiener_process_dt1(dt, f_mean, N):
     W = np.insert(W, 0, 0)
     return W + f_mean
 
+#WRONG
 def wiener_process_dt(dt, f_mean, N):
     dW = np.sqrt(dt) * np.random.normal(0,1, N - 1)
     W = np.cumsum(dW)
@@ -48,21 +49,15 @@ def wiener_process_dt(dt, f_mean, N):
     #return W
     W = np.insert(W, 0, f_mean)
     return W
-def wiener_process_dt2(dt, f_mean, N):
-    dW = np.random.normal(f_mean ,dt, N - 1)
-    W = np.cumsum(dW)
-    #W = np.insert(W, 0, f_mean)
-    #return W
-    W = np.insert(W, 0, f_mean)
-    return W
-
 
 def plot_wiener(wiener, t_axis, show = True):
-    plt.figure("Wiener process std")
-    plt.plot(t_axis, wiener, '-k', label='Wiener')
+    #plt.figure("Wiener process std")
+    plt.figure("Expansion_f M = 1000")
+    #plt.plot(t_axis, wiener, '-k', label='Wiener')
+    plt.plot(t_axis, wiener, '-k')
     plt.ylabel('W(t)')
     plt.xlabel('t')
-    plt.legend(loc='best', fontsize=12)
+    #plt.legend(loc='best', fontsize=12)
     if show:
         plt.show()
 
@@ -94,7 +89,7 @@ def plot_processes_via_expansions(M, t, output_processes, show = True):
         plt.show()
 
 if __name__ == '__main__':
-    np.random.seed(130)
+    #np.random.seed(130)
     #parameters setup
     c = 0.5
     k = 2.0
@@ -116,7 +111,7 @@ if __name__ == '__main__':
 
     #wiener_f = wiener_process(t, f_mean)
     #plot_wiener(wiener_f, t) #gives the same result with a fixed seed
-    wiener_f = wiener_process_dt2(dt, f_mean, N_t_axis)
+    wiener_f = wiener_process_dt1(dt, f_mean, N_t_axis)
     #plot_wiener(wiener_f, t, False) # gives the same result with a fixe sid
 
 
@@ -155,7 +150,7 @@ if __name__ == '__main__':
 
     print("Karhunen Loeve expansion...")
     # Karhunen Loeve expansion
-    M = [5, 100, 1000]
+    M = [5, 100, 1000, 100000]
     f_appr_generated = np.zeros((len(M), len(t)))
     ode_wiener_KL = np.zeros((n_mc, len(M), len(t)))
     ode_wiener_KL_10= np.zeros((n_mc, len(M)))
@@ -173,6 +168,8 @@ if __name__ == '__main__':
             ode_wiener_KL_10[l][m_idx] = output[-1]
             plt.plot(t, output)
         #plot_processes_via_expansions(M, t, f_appr_generated, False)
+    #plot_wiener(wiener_f, t, False)
+
     print("Calculating mean and variance for KL expansion...")
     mean_mc = np.mean(ode_wiener_KL, axis = 0)
     var_mc = np.var(ode_wiener_KL, axis=0, ddof  = 1)
