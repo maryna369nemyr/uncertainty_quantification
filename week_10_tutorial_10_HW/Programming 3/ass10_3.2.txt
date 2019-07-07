@@ -1,0 +1,19 @@
+Wiener process definition...
+Karhunen Loeve expansion...
+Calculating mean and variance for KL expansion...
+Table (approximation via Karhunen-Loeve expansion and Wiener process def)
+    appr_m        mean         var
+         5    -0.48099726  0.25673167
+       100    -0.47825591  0.29282293
+      1000    -0.47822003  0.29278959
+wiener_def    -0.56388024  7.81832717
+
+Wiener process definition...
+Karhunen Loeve expansion...
+Calculating mean and variance for KL expansion...
+Table (approximation via Karhunen-Loeve expansion and Wiener process def)
+    appr_m        mean         var
+         5    -0.46736545  0.25168219
+       100    -0.47196921  0.28515602
+      1000    -0.47194300  0.28513864
+wiener_def    0.19723552  6.83810443

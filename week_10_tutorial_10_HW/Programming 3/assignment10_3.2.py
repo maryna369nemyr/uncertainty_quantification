@@ -84,12 +84,12 @@ def plot_processes_via_expansions(M, t, output_processes, show = True):
     plt.ylabel('W(t)')
     plt.xlabel('t')
     #plt.legend(loc='best', fontsize=12)
-    #plt.savefig("Wiener_expansions" + '.png')
+    plt.savefig("Expansion_f M = " + str(M[len(M)-i-1]) + '.png')
     if show:
         plt.show()
 
 if __name__ == '__main__':
-    #np.random.seed(130)
+    np.random.seed(130)
     #parameters setup
     c = 0.5
     k = 2.0
@@ -142,9 +142,10 @@ if __name__ == '__main__':
     # returns mean columnwise
     # if axis  = 1 the it return mean rowwise
     var_mc = np.var(ode_wiener, axis=0, ddof=1)
-    plt.plot(t, mean_mc, linewidth=4, color='k')
-    plt.plot(t, mean_mc + np.sqrt(var_mc), linewidth=4, color='r')
-    plt.plot(t, mean_mc - np.sqrt(var_mc), linewidth=4, color='r')
+    plt.plot(t, mean_mc, linewidth=3, color='k',linestyle='--')
+    plt.plot(t, mean_mc + np.sqrt(var_mc), linewidth=3, color='k', linestyle='--')
+    plt.plot(t, mean_mc - np.sqrt(var_mc), linewidth=3, color='k', linestyle='--')
+    plt.savefig("With wiener def.png")
     #plt.show()
     ##########
 
@@ -167,8 +168,9 @@ if __name__ == '__main__':
             ode_wiener_KL[l][m_idx] = output
             ode_wiener_KL_10[l][m_idx] = output[-1]
             plt.plot(t, output)
-        #plot_processes_via_expansions(M, t, f_appr_generated, False)
-    #plot_wiener(wiener_f, t, False)
+        plot_processes_via_expansions(M, t, f_appr_generated, False)
+    plot_wiener(wiener_f, t, False)
+    plt.savefig("Expansion_f M = 1000 with std Wiener.png")
 
     print("Calculating mean and variance for KL expansion...")
     mean_mc = np.mean(ode_wiener_KL, axis = 0)
@@ -189,7 +191,8 @@ if __name__ == '__main__':
 
     for m_idx, m in enumerate(M):
         plt.figure("Karhuren-Loeve M = " + str(m))
-        plt.plot(t, mean_mc[m_idx], linewidth=4, color='k')
-        plt.plot(t, mean_mc[m_idx] + np.sqrt(var_mc[m_idx]), linewidth=4, color='r')
-        plt.plot(t, mean_mc[m_idx] - np.sqrt(var_mc[m_idx]), linewidth=4, color='r')
+        plt.plot(t, mean_mc[m_idx], linewidth=3, color='k', linestyle='--')
+        plt.plot(t, mean_mc[m_idx] + np.sqrt(var_mc[m_idx]), linewidth=3, color='k', linestyle='--')
+        plt.plot(t, mean_mc[m_idx] - np.sqrt(var_mc[m_idx]), linewidth=3, color='k',linestyle='--')
+        plt.savefig("Karhuren-Loeve M = " + str(m)+ ".png")
     plt.show()
