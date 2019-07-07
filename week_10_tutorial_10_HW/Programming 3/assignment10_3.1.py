@@ -32,7 +32,7 @@ def generate_plot_wiener(generated_samples,N, show = True):
     #print("Wiener\n", wiener, wiener2)
     x_axis = np.linspace(0, 1, N, endpoint=True)
     #plt.figure("Wiener process std")
-    plt.figure("Wiener_process")
+    plt.figure("Wiener process def")
     plt.plot(x_axis, wiener, '-k', label='Wiener')
     plt.ylabel('W(t)')
     plt.xlabel('t')

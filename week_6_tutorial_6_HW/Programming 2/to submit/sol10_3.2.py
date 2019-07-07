@@ -51,7 +51,7 @@ def WP_KL_approx(t, f_mean, KL_dim):
     zeta = np.random.normal(0, 1, KL_dim)
 
     for i in range(KL_dim):
-        W += np.sqrt(2. / t[-1]) * zeta[i] * (t[-1] ** 2) * np.sin(((i + 1 + 0.5) * np.pi * t) / t[-1]) / (
+        W += np.sqrt(2. / t[-1]) * zeta[i] * (t[-1]) * np.sin(((i + 1 + 0.5) * np.pi * t) / t[-1]) / (
                     (i + 1 + 0.5) * np.pi)
 
     return W

@@ -150,7 +150,7 @@ if __name__ == '__main__':
 
     print("Karhunen Loeve expansion...")
     # Karhunen Loeve expansion
-    M = [5, 100, 1000, 100000]
+    M = [5, 100, 1000]
     f_appr_generated = np.zeros((len(M), len(t)))
     ode_wiener_KL = np.zeros((n_mc, len(M), len(t)))
     ode_wiener_KL_10= np.zeros((n_mc, len(M)))

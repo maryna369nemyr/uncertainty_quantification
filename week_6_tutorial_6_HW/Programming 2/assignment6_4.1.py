@@ -67,7 +67,7 @@ if __name__ == '__main__':
     x_axis = np.linspace(0.0, t_max, num = grid_len,  endpoint=True)
     sol_odeint_true = discretize_oscillator_odeint(model, init_cond, x_axis, params_odeint, atol, rtol)
 
-    K = [2,4,6]#, 8, 10] # for approximation
+    K = [1,2,3]#, 8, 10] # for approximation
     N = [1,2,3]#, 4, 5] # for expansion coefficients
 
 
