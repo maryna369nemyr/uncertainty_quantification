@@ -1,0 +1,49 @@
+Pseudo spectral approach ...
+Expansion coeff [0] (mean) for poly 3 = 0.060712604275820446
+The number of quadrature nodes for the grid is 241
+The first order Sobol indices are
+ [1.95810812e-02 1.02572240e-01 2.98671975e-03 5.11584310e-05
+ 8.69094124e-01]
+The total Sobol' indices are
+ [2.15294497e-02 1.06449822e-01 3.00461684e-03 3.87688603e-04
+ 8.74352533e-01]
+ >>> Time for degree n = 3 (Sobol indices) on SPARSE grids: 31.455880641937256
+Expansion coeff [0] (mean) for poly 3 = 0.060712604949871275
+The number of quadrature nodes for the grid is 1024
+The first order Sobol indices are
+ [1.95810808e-02 1.02572238e-01 2.98671885e-03 5.11584427e-05
+ 8.69094092e-01]
+The total Sobol' indices are
+ [2.15294736e-02 1.06449845e-01 3.00461645e-03 3.87689225e-04
+ 8.74352535e-01]
+ >>> Time for degree n = 3 (Sobol indices) on FULL grids: 28.64971899986267
+__________________________________
+Pseudo spectral approach ...
+Expansion coeff [0] (mean) for poly 4 = 0.06071260619289845
+The number of quadrature nodes for the grid is 781
+The first order Sobol indices are
+ [1.95810819e-02 1.02572238e-01 2.98671770e-03 5.11585020e-05
+ 8.69094079e-01]
+The total Sobol' indices are
+ [2.15294868e-02 1.06449857e-01 3.00461558e-03 3.87689600e-04
+ 8.74352534e-01]
+ >>> Time for degree n = 4 (Sobol indices) on SPARSE grids: 143.05349040031433
+Expansion coeff [0] (mean) for poly 4 = 0.06071260494415006
+The number of quadrature nodes for the grid is 3125
+The first order Sobol indices are
+ [1.95810806e-02 1.02572236e-01 2.98671880e-03 5.11584443e-05
+ 8.69094082e-01]
+The total Sobol' indices are
+ [2.15294853e-02 1.06449855e-01 3.00461664e-03 3.87689622e-04
+ 8.74352536e-01]
+ >>> Time for degree n = 4 (Sobol indices) on FULL grids: 141.919983625412
+__________________________________
+_______________________________________________________________
+_______________________________________________________________
+MC. The first order Sobol indices are
+ [ 2.19239779e-04  1.40032275e-03  4.08657693e-05 -1.65603061e-06
+  9.85782086e-03]
+MC. The total Sobol' indices are
+ [2.18397791e-04 1.13836993e-03 3.04135515e-05 4.08328549e-06
+ 9.18679051e-03]
+ >>> Time for MC method n_mc = 1000 (Sobol indices): 11.331347942352295

@@ -2,6 +2,7 @@ import numpy as np
 import chaospy as cp
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
+import time
 
 def model(w, t, p):
 	x1, x2 		= w
@@ -67,6 +68,7 @@ def plot_sobol_indices(total_sobol_indices, title_name, show = True):
     plt.xticks(sobol_indices_x, labels)
     plt.title(title_name)
     plt.tight_layout()
+    plt.savefig(title_name + ".png")
     if show:
         plt.show()
 
@@ -92,7 +94,7 @@ def show_sobol(sobol_first, sobol_total, title_names):
 
 if __name__ == '__main__':
     # relative and absolute tolerances for the ode int solver
-    np.random.seed(130)
+    np.random.seed(10)
     atol, rtol = 1e-10, 1e-10
 
     # w is deterministic
@@ -120,16 +122,16 @@ if __name__ == '__main__':
     N = [3,4]
     K = [3,4]
 
-
     # create the orthogonal polynomials
 
     #################### full grid computations #####################
 
     joint_distr = cp.J(distr_c, distr_k,  distr_f, distr_y0, distr_y1)
-    n_MC = 100
+    n_MC = 1000
     title_names  =["First order Sobol indices, MC method", "Total Sobol indices, MC method"]
-    #joint_distr_doubled = cp.J(joint_distr,joint_distr)
+
     #A,B = generate_matrices(joint_distr, n_MC) # quasi monte carlo gives the same result for twp matrices
+    now_mc = time.time()
     A_mc, B_mc = generate_matrices_MC(joint_distr, n_MC)
     list_A_B = generate_matrices_from_A_B(A_mc,B_mc)
     all_matrices = [A_mc]+ [B_mc] + list_A_B
@@ -137,5 +139,7 @@ if __name__ == '__main__':
 
     sobol_first, sobol_total = estimate_sobol(f_eval_list, n_MC)
     show_sobol(sobol_first, sobol_total, title_names)
+    print(f" >>> Time for MC method n_mc = {n_MC} (Sobol indices): {time.time() - now_mc}")
     plt.show()
+
     print("Done.")

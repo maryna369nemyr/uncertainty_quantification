@@ -16,7 +16,7 @@ def model(w, t, p):
 def discretize_oscillator_odeint(model, atol, rtol, init_cond, args, t, t_interest):
 	sol = odeint(model, init_cond, t, args=(args,), atol=atol, rtol=rtol)
 
-	return sol[t_interest, 0]
+	return sol[:, 0]
 
 if __name__ == '__main__':
     # relative and absolute tolerances for the ode int solver

@@ -34,6 +34,7 @@ def plot_sobol_indices(total_sobol_indices, title_name, show = True):
     plt.xticks(sobol_indices_x, labels)
     plt.title(title_name)
     plt.tight_layout()
+    plt.savefig(title_name + ".png")
     if show:
         plt.show()
 
@@ -43,8 +44,8 @@ def calculate_sobol_indices(quad_deg_1D, poly_deg_1D, joint_distr, sparse_bool, 
 
     poly = cp.orth_ttr(poly_deg_1D, joint_distr, normed=True)
 
-    y_out = [discretize_oscillator_odeint(model, atol, rtol, (y0_, y1_), (c_, k_, f_, w), t)[-1] for
-             y0_, y1_, c_, k_, f_ in zip(c, k, f, y0, y1)]
+    y_out = [discretize_oscillator_odeint(model, atol, rtol, (y0_, y1_), (c_, k_, f_, w), t)[-1]
+             for c_, k_, f_, y0_, y1_ in zip(c, k, f, y0, y1)]
 
     # find generalized Polynomial chaos and expansion coefficients
     gPC_m, expansion_coeff = cp.fit_quadrature(poly, nodes, weights, y_out, retall=True)
@@ -103,18 +104,23 @@ if __name__ == '__main__':
     #################### full grid computations #####################
 
     joint_distr = cp.J(distr_c, distr_k,  distr_f, distr_y0, distr_y1)
-    title_names_sparse = ["First order Sobol indices on sparse grid", "Total Sobol indices on sparse grid"]
-    title_names_full = ["First order Sobol indices on full grid", "Total Sobol indices on full grid"]
+    title_names_sparse = [["First order Sobol indices on sparse grid, N = "+str(N[0]), "Total Sobol indices on sparse grid N = "+str(N[0])],
+                          ["First order Sobol indices on sparse grid, N = "+str(N[1]), "Total Sobol indices on sparse grid N = "+str(N[1])]]
+    title_names_full = [["First order Sobol indices on full grid, N = "+str(N[0]), "Total Sobol indices on full grid, N = "+str(N[0])],
+                        ["First order Sobol indices on full grid, N = " + str(N[1]),
+                         "Total Sobol indices on full grid, N = " + str(N[1])]]
+    idx = 0
     for degree_quadr, degree_poly in zip(K,N):
         print("Pseudo spectral approach ...")
         now_sparse = time.time()
         first_order_Sobol_ind_sparse, total_Sobol_ind_sparse = calculate_sobol_indices(degree_quadr, degree_poly,
-                                                                                       joint_distr, True, title_names_sparse)
+                                                                                       joint_distr, True, title_names_sparse[idx])
         now_full = time.time()
         print(f" >>> Time for degree n = {degree_poly} (Sobol indices) on SPARSE grids: {now_full - now_sparse}")
         first_order_Sobol_ind_full, total_Sobol_ind_full = calculate_sobol_indices(degree_quadr, degree_poly,
-                                                                                   joint_distr, False, title_names_full)
+                                                                                   joint_distr, False, title_names_full[idx])
         now_ = time.time()
         print(f" >>> Time for degree n = {degree_poly} (Sobol indices) on FULL grids: {now_ - now_full}")
         print("__________________________________")
+        idx+=1
     plt.show()
