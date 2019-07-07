@@ -69,6 +69,10 @@ def plot_wiener(wiener, t_axis, show = True):
 def karhunen_loeve_expansion(generated_samples, m, t_point, T_max, f_mean):
     samples = generated_samples[0:m]
     idx_n =  np.linspace(1, m, m)
+    value = (np.sqrt(eigen_values(idx_n, T_max))*eigen_vectors(idx_n, t_point, T_max)* samples)
+
+    #print(f"{m} Karhunen Loeve t = {t_point} values = {value}")
+    #print(f" eigenvalue_sqrt = {np.sqrt(eigen_values(idx_n, T_max))}, eigenvector = {eigen_vectors(idx_n, t_point, T_max)}")
     W_t = np.sum(
                 np.sqrt(eigen_values(idx_n, T_max))*eigen_vectors(idx_n, t_point, T_max)* samples)
 
@@ -79,6 +83,24 @@ def karhunen_loeve_expansion_vector(generated_samples, m, t_vector, T_max,f_mean
     for i, t_point in enumerate(t_vector):
         f_appr_generated[i] = karhunen_loeve_expansion(generated_samples, m, t_point, T_max, f_mean)
     return f_appr_generated
+
+
+def WP_KL_approx(generated_samples, t, f_mean, KL_dim):
+    #t is a vector here
+
+    W = np.zeros(len(t)) + f_mean
+
+    zeta = np.random.normal(0, 1, KL_dim)
+    #zeta = generated_samples[0:KL_dim]
+    for i in range(KL_dim):
+        value = np.sqrt(2. / t[-1]) * zeta[i] * (t[-1]) * np.sin(((i + 1 + 0.5) * np.pi * t) / t[-1]) / (
+                    (i + 1 + 0.5) * np.pi)
+
+        #print(f"{KL_dim} Not mine n = {i}  values = {value}")
+        #print(f" eigenvalue_sqrt = { (t[-1]) / ((i + 1 + 0.5) * np.pi)}, eigenvector = { np.sqrt(2. / t[-1]) * np.sin(((i + 1 + 0.5) * np.pi * t) / t[-1])}")
+        W += value
+
+    return W
 
 def plot_processes_via_expansions(M, t, output_processes, show = True):
 
@@ -104,8 +126,8 @@ if __name__ == '__main__':
     f_mean = 0.5
 
     #Eigen values and eigen vectors for Wiener process
-    eigen_values  = lambda x, T_max:  T_max**2 / (((x + 0.5)**2) * (np.pi**2))
-    eigen_vectors = lambda x, t, T_max: np.sqrt(2/T_max)* np.sin((x+ 0.5)*np.pi * t/ T_max)
+    eigen_values  = lambda x, T_max:  (T_max / ((x + 0.5) * np.pi))**2
+    eigen_vectors = lambda x, t, T_max: np.sqrt(2/T_max)* np.sin(((x+ 0.5)*np.pi * t)/ T_max)
 
     #time domain
     t_max  = 10
@@ -155,7 +177,8 @@ if __name__ == '__main__':
 
     print("Karhunen Loeve expansion...")
     # Karhunen Loeve expansion
-    M = [5, 100, 1000]
+    M = [5, 10, 15]
+    f_appr_generated2 = np.zeros((len(M), len(t)))
     f_appr_generated = np.zeros((len(M), len(t)))
     ode_wiener_KL = np.zeros((n_mc, len(M), len(t)))
     ode_wiener_KL_10= np.zeros((n_mc, len(M)))
@@ -165,7 +188,8 @@ if __name__ == '__main__':
 
         for m_idx, m in enumerate(M):
             plt.figure("Karhuren-Loeve M = "+ str(m))
-            f_appr_generated[m_idx] = karhunen_loeve_expansion_vector(generated_samples, m, t, t_max, f_mean)
+            f_appr_generated2[m_idx] = karhunen_loeve_expansion_vector(generated_samples, m, t, t_max, f_mean)
+            f_appr_generated[m_idx] = WP_KL_approx(generated_samples, t, f_mean, m)
             output = discretize_oscillator_euler(t,dt,params, f_appr_generated[m_idx,:])
 
 
