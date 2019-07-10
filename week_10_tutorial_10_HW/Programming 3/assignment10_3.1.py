@@ -72,7 +72,7 @@ if __name__ == '__main__':
     np.random.seed(120)
     generated_samples  = np.random.normal(0, 1, max(M))
 
-    generate_plot_wiener(generated_samples, N, False)
+    generate_plot_wiener( np.random.normal(0, 1, N), N, False)
 
     #Eigen values for Wiener process
     eigen_values  = lambda x:  1./ (((x + 0.5)**2) * (np.pi**2))

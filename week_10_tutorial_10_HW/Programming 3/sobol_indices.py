@@ -94,7 +94,7 @@ def show_sobol(sobol_first, sobol_total, title_names):
 
 if __name__ == '__main__':
     # relative and absolute tolerances for the ode int solver
-    np.random.seed(10)
+
     atol, rtol = 1e-10, 1e-10
 
     # w is deterministic

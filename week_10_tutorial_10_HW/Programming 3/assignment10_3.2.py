@@ -18,21 +18,7 @@ def discretize_oscillator_euler(t, dt, params, f_vector):
     return z0
 
 
-
-def wiener_process(t_vector, f_mean):
-    #when we have deviationg in dt liek 0.01 etc
-    t_vector_from = t_vector
-    t_vector_from = np.insert(t_vector, len(t_vector_from), 0)
-    t_vector_what = np.insert(t_vector, 0, 0)
-    dt = t_vector_from - t_vector_what
-    dt = dt[1:-1]
-
-    dW = np.sqrt(dt) * np.random.normal(0,1, len(t_vector) - 1)
-    W = np.cumsum(dW)
-    W = np.insert(W, 0, f_mean)
-    return W
-
-def wiener_process_dt1(dt, f_mean, N):
+def wiener_process_dt(dt, f_mean, N):
     #this is not the same as wiener_process starting from mean or generating rv with mean
     dW = np.sqrt(dt) * np.random.normal(0,1, N - 1)
     W = np.cumsum(dW)
@@ -41,14 +27,7 @@ def wiener_process_dt1(dt, f_mean, N):
     W = np.insert(W, 0, 0)
     return W + f_mean
 
-#WRONG
-def wiener_process_dt(dt, f_mean, N):
-    dW = np.sqrt(dt) * np.random.normal(0,1, N - 1)
-    W = np.cumsum(dW)
-    #W = np.insert(W, 0, f_mean)
-    #return W
-    W = np.insert(W, 0, f_mean)
-    return W
+
 
 def plot_wiener(wiener, t_axis, show = True):
     #plt.figure("Wiener process std")
@@ -111,7 +90,7 @@ if __name__ == '__main__':
 
     #wiener_f = wiener_process(t, f_mean)
     #plot_wiener(wiener_f, t) #gives the same result with a fixed seed
-    wiener_f = wiener_process_dt1(dt, f_mean, N_t_axis)
+    wiener_f = wiener_process_dt(dt, f_mean, N_t_axis)
     #plot_wiener(wiener_f, t, False) # gives the same result with a fixe sid
 
 
@@ -126,7 +105,7 @@ if __name__ == '__main__':
     plt.figure("With wiener def")
     for i in range(n_mc):
         # for each monte carlo sampling
-        f_generated = wiener_process_dt1(dt, f_mean, N_t_axis)
+        f_generated = wiener_process_dt(dt, f_mean, N_t_axis)
         output = discretize_oscillator_euler(t, dt, params, f_generated)
         ode_wiener.append(output)
         ode_wiener_10.append(output[-1])

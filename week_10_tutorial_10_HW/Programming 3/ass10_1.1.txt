@@ -47,3 +47,12 @@ MC. The total Sobol' indices are
  [2.18397791e-04 1.13836993e-03 3.04135515e-05 4.08328549e-06
  9.18679051e-03]
  >>> Time for MC method n_mc = 1000 (Sobol indices): 11.331347942352295
+
+
+MC. The first order Sobol indices are
+ [ 2.63846980e-04  7.01427153e-04  2.92902634e-05 -3.61637032e-05
+  8.15296867e-03]
+MC. The total Sobol' indices are
+ [2.21939222e-04 1.07887671e-03 3.23140834e-05 3.90311740e-06
+ 8.42215293e-03]
+ >>> Time for MC method n_mc = 1000 (Sobol indices): 10.90095043182373
