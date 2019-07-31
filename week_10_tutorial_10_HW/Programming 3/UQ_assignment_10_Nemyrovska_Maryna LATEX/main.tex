@@ -1,0 +1,234 @@
+\documentclass[11pt]{article}
+
+% ------------------------------------------------------------------------------
+% This is all preamble stuff that you don't have to worry about.
+% Head down to where it says "Start here"
+% ------------------------------------------------------------------------------
+
+\usepackage[margin=.8in,top=1.1in,bottom=1.1in]{geometry} % page layout
+\usepackage{amsmath,amsthm,amssymb,amsfonts} % math things
+\usepackage{graphicx} % include graphics
+\usepackage{fancyhdr} % header customization
+\usepackage{titlesec} % help with section naming
+\usepackage{amsmath}
+\usepackage{listings}
+
+
+% naming sections
+%\titleformat{\section}{\bf}{Assignment \thesection}{0.5em}{}
+%\newcommand{\ass}{\section{}}
+
+\titleformat{\subsection}{\bf}{Assignment \thesubsection}{0.5em}{}
+\newcommand{\subass}{\subsection{}}
+\newcommand{\report}{\textbf{Report: \\}}
+% headers
+\pagestyle{fancy} 
+\fancyhf{} % clear all
+\fancyhead[L]{\sffamily\small Algorithms for Uncertainty Quantification}
+\fancyhead[R]{\sffamily\small page \thepage}
+\renewcommand{\headrulewidth}{0.2pt}
+\renewcommand{\footrulewidth}{0.2pt}
+\markright{\hrulefill\quad}
+
+\newcommand{\hwhead}[4]{
+\begin{center}
+\sffamily\large\bfseries Programming 3: Sensitivity analysis and random fields in Uncertainty Quantification
+\vspace{2mm} 
+\normalfont
+
+#2 -- #3 %-- \texttt{#4}
+\end{center}
+\vspace{6mm} \hrule \vspace{4mm}
+}
+
+% ------------------------------------------------------------------------------
+% Start here -- Fill in your name, imat and email
+% ------------------------------------------------------------------------------
+
+\newcommand{\name}{Maryna Nemyrovska} %
+\newcommand{\imat}{ Matrikel-Nr. 03694104} %
+
+\lstset{
+%numbers=left, 
+numberstyle=\small, 
+numbersep=8pt, 
+frame = single, 
+language=Python, 
+framexleftmargin=15pt}
+
+
+\begin{document}
+
+% ------------------------------------------------------------------------------
+% Change xx (and only xx) to the current sheet number
+% ------------------------------------------------------------------------------
+\hwhead{xx}{\name}{\imat}{\email}
+
+% ------------------------------------------------------------------------------
+% Fill in your solutions
+% ------------------------------------------------------------------------------
+
+\section{Sensitivity analysis} 
+\subass
+In this assignment we are supposed to compare Sobol indices that are obtained using polynomial chaos expansion and a Monte Carlo approach.\par
+\textbf{Using polynomial chaos expansion, pseudo-spectral approach:} \\
+Having $c,k,f,y_0,y_1$ random coefficients through which one needs to propagate uncertainty do
+\begin{enumerate}
+    \item Define the joint distribution $p_{c,k,f,y_0,y_1}$ over ${c,k,f,y_0,y_1}$,
+    \item Generate $K$ quadratures according to the joint distribution. One fetches $(K+1)^d$ number of nodes and weights, $d$ - dimension of our stochastic space $d=5$.
+    \item Generate $N$ othonormal polynomials wrt to the joint distribution $p_{c,k,f,y_0,y_1}$.
+    \item Calculate first order Sobol indices and total Sobol indices using expansion coefficients of the fitted general polynomial chaos.
+\end{enumerate} \par
+\textbf{Monte Carlo based approach:}
+\begin{enumerate}
+    \item Generate an $N \times 2d$ sample matrix, i.e. each row is a sample point in the hyperspace of $2d$ dimensions. This should be done with respect to the probability distributions of the input variables. $N$ is a number of Monte Carlo samples.
+    \item Use the first $d$ columns of the matrix as matrix $A$, and the remaining $d$ columns as matrix $B$. This effectively gives two independent samples of $N$ points in the $d$-dimensional unit hypercube.
+    \item Build $d$ further $N \times d$ matrices $A_B^i$, for $i = 1,2,...,d$, such that the $i$-th column of $A_B^i$ is equal to the $i$-th column of $B$, and the remaining columns are from A.
+    The $A, B$, and the $d$ $A_B^i$ matrices in total specify $N(d+2)$ points in the input space (one for each row). Run the model at each design point in the $A, B$, and $A_B^i$ matrices, giving a total of $N(d+2)$ model evaluations – the corresponding $f(A), f(B)$ and $f(A_B^i)$ values.
+    \item Calculate the sensitivity indices using the estimators below.
+    $$S_i \approx \frac{1}{N} \sum_{n = 1}^{N} f(B)_{(n)} \cdot (f(A_B^i)_{(n)}-f(A)_{(n)}),$$
+    $$S_T_i \approx \frac{1}{2N} \sum_{n = 1}^{N} (f(A_B^i)_{(n)}-f(A)_{(n)})^2.$$
+\end{enumerate}
+\report
+To sum up, in Monte Carlo approach I have used equations (16), (19) from the Saltelli's paper.
+The results of total Sobol indices are approximately the same for all methods. The results for the first order Sobol indices depict the same proportion of the contribution, although some of the inputs, that has very low impact, resulted in a different value of the first order Sobol indices.
+\begin{center} \textbf{The first order Sobol indices}\\
+\end{center}
+\\
+\begin{tabular}{|p{4.0cm}|p{2.2cm}|p{2.2cm}|p{2.2cm}|p{2.2cm}|p{2.2cm}|p{1.0cm}|}
+\hline
+method & $S_c$ & $S_k$ & $S_f$ & $S_y_0$ & $S_y_1$ & nodes \\
+\hline
+gPCE $(N=3)$, sparse &  1.9581e-02 &1.0257e-01 &2.9867e-03 &5.1158e-05
+ &8.6909e-01 & 241 \\
+gPCE $(N=3)$, full & 1.9581e-02 &1.0257e-01& 2.9867e-03& 5.1158e-05&
+ 8.6909e-01 & 1024 \\
+gPCE $(N=4)$, sparse & 1.9581e-02& 1.0257e-01& 2.9867e-03& 5.1158e-05&
+ 8.6909e-01 & 781\\
+gPCE $(N=4)$, full & 1.9581e-02& 1.0257e-01&2.9867e-03 &5.1158e-05&
+ 8.6909e-01 & 3125\\
+Monte Carlo &  2.6384e-04 &  7.0142e-04 & 2.9290e-05 &-3.616e-05 &
+  8.1529e-03 & 1000\\
+\hline
+\end{tabular}
+
+\begin{center} \textbf{The total Sobol indices}\\
+\end{center}
+\\
+\begin{tabular}{|p{4.0cm}|p{2.2cm}|p{2.2cm}|p{2.2cm}|p{2.2cm}|p{2.2cm}|p{1.0cm}|}
+\hline
+method & $S_c$ & $S_k$ & $S_f$ & $S_y_0$ & $S_y_1$ & nodes \\
+\hline
+gPCE $(N=3)$, sparse &  2.1529e-02& 1.0644e-01& 3.0046e-03& 3.8768e-04&
+ 8.7435e-01 & 241 \\
+gPCE $(N=3)$, full &   2.1529e-02& 1.0644e-01& 3.0046e-03& 3.8768e-04&
+ 8.7435e-01 & 1024 \\
+gPCE $(N=4)$, sparse &  2.1529e-02& 1.0644e-01& 3.0046e-03& 3.8768e-04&
+ 8.7435e-01 & 781\\
+gPCE $(N=4)$, full &   2.1529e-02& 1.0644e-01& 3.0046e-03& 3.8768e-04&
+ 8.7435e-01 & 3125\\
+Monte Carlo &  2.2193e-04 &1.0788e-03& 3.2314e-05& 3.9031e-06&
+ 8.4221e-03 & 1000\\
+\hline
+\end{tabular}\\\par
+ Please, note, that general polynomial chaos expansion in the case of high-dimensional problem requires a lot of time to find the best approximating polynomial of a degree at most $N$, especially considering a fact, that we have different  combinations of the multiplication of monomials.
+\begin{center} \textbf{Time table}\\
+\end{center}
+\\
+\begin{tabular}{|p{4.0cm}|p{2.2cm}|p{4cm}|p{2.2cm}|}
+\hline
+method & time (sec) & num. evaluation ODE & nodes\\
+\hline
+gPCE $(N=3)$, sparse & 31 & $nodes  = 241$ & 241 \\
+gPCE $(N=3)$, full & 29 & $nodes  = 1024$& 1024 \\
+gPCE $(N=4)$, sparse & 140& $nodes  = 781$& 781\\
+gPCE $(N=4)$, full &150 & $nodes  = 3125$  &3125\\
+Monte Carlo & 11 &$(d+2)n  = 7000 $  & 1000\\
+\hline
+\end{tabular}\newpage
+Here we also attach the bar plots of Sobol indices.\\
+ \includegraphics[width=8cm,height=7cm]{./pictures/1.1/total_1.png}
+ \includegraphics[width=8cm,height=7cm]{./pictures/1.1/total_2.png}\\
+ \includegraphics[width=8cm,height=7cm]{./pictures/1.1/total_3.png}\\
+ \includegraphics[width=8cm,height=7cm]{./pictures/1.1/total_4.png}
+ \includegraphics[width=8cm,height=7cm]{./pictures/1.1/total_5.png}
+
+\section{Covariance functions} 
+\subass
+\report
+Here we include the picture that was issued by the code. The top pictures were generated with the same sequence of multivariate random variables as the bottom ones. We can observe that the squared exponential kernel gives us very smooth and gradual representation of the collection of random variables, while exponential kernel gives us a non-smooth picture.\par
+Squared exponential kernel can be used for cases when we are interested into a correlation between points that are relatively close to each other and the distance between each other is gradually changing.\par 
+At the same time, in the case of exponential kernel, we might be engrossed into a correlation of points, which are quite close to each other and their distance is changing linearly. It might be useful for some sparse points.
+
+%COMPLETE!
+\includegraphics[width=12cm,height=8cm]{./pictures/2.1/result_gaussian_random_fields.png}
+
+\section{The Wiener process} 
+\subass
+\report
+For Karhunen-Loeve expansion we had $M$ that corresponds to the number of components in the sum with which we try to approximate our Wiener process. So $M$ corresponds to a discretization of a stochastic space since we generate M times $\zeta_i \sim N(0,1)$.
+For the generation of the standard Wiener process according to its definition we had $N$, that corresponds to a discretization of a time space. More precisely, we were generating $dW \sim N(0, dt)$ and then taking the cumulative sum for each $dt$, where $dt = \frac{1}{N}$. Consequently, with an increasing number of sample points $N$ we can observe that our Wiener process, that is generated via definition, looks as if it is very zoomed(+) when $N$ is small, i.e. we have only $N$ random jumps.\par
+
+In the picture below we can observe that eigenvalues of the Wiener process decrease drastically for $M_{\lambda} = 1000.$ Since eigenvalues are the multiplicants in the Karhunen-Loeve expansion,
+$$ W_t = \sum_{n = 1}^{\infty}\sqrt{\lambda_n} \phi_n(t)\zeta_n \approx \sum_{n = 1}^{M}\sqrt{\lambda_n} \phi_n(t)\zeta_n, \quad \zeta_n \sim N(0,1)
+$$
+we can make a conclusion, that at some big $M$ we can't make our approximation significantly better, that is we multiply it with a value which is very close to $0$. Thus it does not make a lot of sense to always choose as big $M$ as possible.\par 
+
+\includegraphics[width=12cm,height=8cm]{./pictures/3.1/Eigen_values.png}\\
+
+While fixing the generated samples and building three different Karhunen-Loeve expansions, we can observe that with increasing $M$ our process behaves more "random", how it is supposed to be in the case of the Wiener process (nowhere differentiable and everywhere continuous).
+
+\includegraphics[width=12cm,height=8cm]{./pictures/3.1/Wiener_expansions.png} \\
+Finally, one can find below the picture of the generated Wiener process according to its definition.
+\includegraphics[width=12cm,height=8cm]{./pictures/3.1/Wiener_std.png}\\
+\subass
+\report
+Here one can find the results of the mean and variance of $y_0(10)$ while we are feeding our dumped oscillator with $f$ -  Wiener process with mean $\mu_f = 0.5$. 
+\begin{enumerate}
+\item In order to generate a Wiener process with mean value $0.5$ according to definition, one can start with $W_0 = \mu_f$ and then keep generating $dW_t \sim N(0, dt)$ and adding this value iteratively to obtain $W_t$. Or simply generate a standard Wiener process $W_0 = 0, \quad dW_t \sim N(0, dt), \quad W_t - W_s  \sim N(0, t-s)$ and then shift it with the mean $\mu_f$ at each time point.
+
+\item When one builds a Karhunen-Loeve expansion for a Wiener process with mean values $\mu_f$, one needs to apply shift of the size $\mu_f$ for all $t$:
+$$ W_t = \mu_f + \sum_{n = 1}^{\infty}\sqrt{\lambda_n} \phi_n(t)\zeta_n, \quad \zeta_n \sim N(0,1)
+$$
+\end{enumerate}
+
+One can easily notice that with increasing $M = [5,10,100]$ the variance is also slightly increasing. It can be explained by the fact that with a bigger $M$, our coefficient $f$ is more random for the model above, so it contributes to the variance more.\par
+In our implementation we used the same generated samples for all Karhunen-Loeve expansions.
+\begin{lstlisting}
+Wiener process definition...
+Karhunen Loeve expansion...
+Calculating mean and variance for KL expansion...
+Table (approximation via Karhunen-Loeve expansion and Wiener process def)
+    appr_m        mean         var
+         5    -0.48099726  0.25673167
+       100    -0.47825591  0.29282293
+      1000    -0.47822003  0.29278959
+wiener_def    -0.56388024  7.81832717
+
+Wiener process definition...
+Karhunen Loeve expansion...
+Calculating mean and variance for KL expansion...
+Table (approximation via Karhunen-Loeve expansion and Wiener process def)
+    appr_m        mean         var
+         5    -0.46736545  0.25168219
+       100    -0.47196921  0.28515602
+      1000    -0.47194300  0.28513864
+wiener_def    0.19723552  6.83810443
+\end{lstlisting}
+
+Here we also include the plot of all our generated $f$-s for $M = [5,10,100]$ respectively. In the last plot we also included $f$ which was generated according to the definition of the Wiener process, it has a black color.
+
+\includegraphics[width=6cm,height=8cm]{./pictures/3.2/expansion_1.png}
+\includegraphics[width=6cm,height=8cm]{./pictures/3.2/expansion_3.png}
+\includegraphics[width=6cm,height=8cm]{./pictures/3.2/expansion_2.png}
+
+In our case all the dumped oscillators then had the following view. The dashed black line shows the mean values, as well as the standard deviation. The first three pictures are the output from the Karhunen-Loeve expansions for $M = [5, 10, 100]$. The bottom right picture is the output that was fetched via the standard Wiener process.
+
+\includegraphics[width=8cm,height=8cm]{./pictures/3.2/kl_1.png}
+\includegraphics[width=8cm,height=8cm]{./pictures/3.2/kl_2.png}\\
+\includegraphics[width=8cm,height=8cm]{./pictures/3.2/kl_3.png}
+\includegraphics[width=8cm,height=8cm]{./pictures/3.2/wiener.png}
+
+With regard to other methods of propagation the uncertainty of the stochastic process through the model that could be considered as an alternative to Monte Carlo sampling, we know that $M$, the number that assures the truncation of the series to approximate a random field, defines the dimensions of our stochastic space. The Karhunen-Loeve expansion then leads to the generation of random vectors $\zeta \sim N(\theta, I_d)$. As a next step we can use \textbf{interpolation} to interpolate our function through generated $\zeta$ as we did in the previous assignment \textit{Programming2.} Also here we can use \textbf{ sparse grids} if our dimension of the stochastic space is within the range $[5 ..20]$. Please note, that here \textbf{one cannot} use \textbf{the polynomial chaos expansions (gPCE)}, since we only can generate quadratures (nodes and weights) according to a given distribution, not a given stochastic process.
+\end{document}
+n a pervious Assignment
