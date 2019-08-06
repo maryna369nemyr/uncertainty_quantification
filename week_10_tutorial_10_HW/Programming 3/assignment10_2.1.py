@@ -57,11 +57,9 @@ def squared_exp_kernel(points, l):
 
 def generate_heat_map(N, mean_vec, L, samples, figure_name, axis):
 
-    gaussian_RF =  mean_vec + np.matmul(L, samples.T)
-    # gives (N**2, N**2) where all columns are identical
-    gaussian_RF  = gaussian_RF[:,0]
-    # shape (N**2, 1)
-    # going back to our initial grid
+    gaussian_RF =  mean_vec + np.matmul(L, samples.T).T
+    # gives (N**2, 1) where all columns are identical
+
     gaussian_RF = np.reshape(gaussian_RF, (N,N))
     #shape (N, N) what we are interested in
     #plt.figure(figure_name)
@@ -72,7 +70,7 @@ def generate_heat_map(N, mean_vec, L, samples, figure_name, axis):
     #plt.savefig('./output_pictures/' + figure_name + '.png')
 
 if __name__== '__main__':
-    N =  40
+    N =  10
     l = 1.00 #0.05 and mean 0.5
     mean_func = np.array([0.1]*N**2)
     points  = create_grid(N, N)
