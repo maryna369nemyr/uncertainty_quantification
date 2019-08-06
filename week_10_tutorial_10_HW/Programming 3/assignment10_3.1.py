@@ -66,7 +66,7 @@ def karhunen_loeve_expansion(generated_samples, m, t_point):
 
 
 if __name__ == '__main__':
-    N = 1000
+    N = 100
     M_lambda = 1000
     M = [10,100,1000]
     np.random.seed(120)

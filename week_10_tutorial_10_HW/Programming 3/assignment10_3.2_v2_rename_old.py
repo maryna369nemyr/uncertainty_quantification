@@ -126,8 +126,8 @@ if __name__ == '__main__':
     f_mean = 0.5
 
     #Eigen values and eigen vectors for Wiener process
-    eigen_values  = lambda x, T_max:  (T_max / ((x + 0.5) * np.pi))**2
-    eigen_vectors = lambda x, t, T_max: np.sqrt(2/T_max)* np.sin(((x+ 0.5)*np.pi * t)/ T_max)
+    eigen_values  = lambda x, T_max:  (T_max / ((x - 0.5) * np.pi))**2
+    eigen_vectors = lambda x, t, T_max: np.sqrt(2/T_max)* np.sin(((x- 0.5)*np.pi * t)/ T_max)
 
     #time domain
     t_max  = 10
