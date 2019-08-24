@@ -113,6 +113,35 @@ if __name__ == '__main__':
         func_evals.append(func_result_eval)
     # The end of precalculation
 
+
+    # to look at the interpolations wrt w function
+    for ll in range(len(cheb_grids)):
+        plt.figure("w")
+        inter_w = np.array([barycentric_interp(w_, cheb_grids[ll], weights_grid[ll], func_evals[ll])
+                                for w_ in np.linspace(0.95, 1.05, num=100,  endpoint=True)])
+        plt.plot(np.linspace(0.95, 1.05, num=100,  endpoint=True), inter_w)
+    #plt.show()
+    ###########################
+    func_evals_full = []
+    for grid in cheb_grids:
+        func_result_eval = np.array(
+            [discretize_oscillator_odeint(model, init_cond, x_axis, (c, k, f, grid_point), atol, rtol)
+             for grid_point in grid])
+        func_evals_full.append(func_result_eval)
+
+
+    for ll in range(len(cheb_grids)):
+        for t in np.arange(80,85,1):
+            plt.figure("func")
+            f_ll_t = func_evals_full[ll][:,t]
+            #print("here")
+            inter_w = np.array([barycentric_interp(w_, cheb_grids[ll], weights_grid[ll], f_ll_t)
+                                for w_ in np.linspace(0.95, 1.05, num=100,  endpoint=True)])
+            plt.plot(np.linspace(0.95, 1.05, num=100,  endpoint=True), inter_w)
+    plt.show()
+    ###########################
+
+
     for i, n in enumerate(M):
         distr = cp.Uniform(0.95, 1.05)
         w_generated = distr.sample(size=n)
@@ -133,6 +162,9 @@ if __name__ == '__main__':
         for w_value in w_generated:
             # using_interpolation
             output_interpol.append(interpolation(cheb_grids, weights_grid, func_evals, w_value))
+
+
+
         print(f'Time for {n} generated values using interpolation {time.time() - now_interpol}')
         output_interpol = np.array(output_interpol)
 
