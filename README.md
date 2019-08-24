@@ -5,6 +5,7 @@ having stochastic and deterministic input varianles. This kind of task is called
 Most of the code was written using the prepared library `chaospy` in python.
 
 1. Sampling methods
+
  1.1 Monte Carlo Sampling
  
  1.2 Quasi Mpnte Cralo Sampling (Halton Sequences)
@@ -12,6 +13,7 @@ Most of the code was written using the prepared library `chaospy` in python.
  1.3 Advanced Sapling (Control variates, Importance sampling, Antithetic sampling)
  
 2. Generalized Polynomial Chaos Expansion
+
   2.1 gPCE + pseudo spectral approach
   
   2.2 gPCE + Stochastic Galerkin
